@@ -12,7 +12,7 @@ namespace rm
      * 
      * @param polygons  Collection of original polygons to inflate.
      * @param offset    How much the polygon should be inflated.
-     * @return std::vector<Polygon> Collection of inflated polygons.
+     * @return          Collection of inflated polygons.
      */
     std::vector<Polygon> inflate(const std::vector<Polygon> &polygons, float offset);
 }

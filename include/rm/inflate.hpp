@@ -8,11 +8,11 @@
 namespace rm
 {
     /**
-     * @brief 
+     * @brief Inflate polygons by specified offset value. 
      * 
-     * @param polygons 
-     * @param offset 
-     * @return std::vector<Polygon> 
+     * @param polygons  Collection of original polygons to inflate.
+     * @param offset    How much the polygon should be inflated.
+     * @return std::vector<Polygon> Collection of inflated polygons.
      */
     std::vector<Polygon> inflate(const std::vector<Polygon> &polygons, float offset);
 }

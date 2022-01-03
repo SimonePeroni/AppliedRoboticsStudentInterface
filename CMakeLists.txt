@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(student_proect)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
 
@@ -9,16 +11,24 @@ find_package(project_interface REQUIRED )
 
 ## Specify additional locations of header files
 include_directories(
- include 
+ include
  ${OpenCV_INCLUDE_DIRS}
  ${project_interface_INCLUDE_DIRS}
+ lib
 )
+
+add_subdirectory(lib/clipper)
 
 ## CREATE EXECUTABLE LIBRARY
 add_library(student SHARED
    src/student_interface.cpp
+   src/rm/inflate.cpp
 )
 
 target_link_libraries(student
   ${OpenCV_LIBRARIES}  
+  polyclipping
 )
+
+## Compile tests
+add_subdirectory(test)

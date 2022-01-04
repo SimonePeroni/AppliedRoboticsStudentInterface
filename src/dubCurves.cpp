@@ -4,7 +4,7 @@
 #include<math.h>
 #include<algorithm>
 #include <cstdlib>
-#include "Dub_curves.h"
+#include "dubCurves.hpp"
 #include "utils.hpp"	
 #include "limits.h"
 

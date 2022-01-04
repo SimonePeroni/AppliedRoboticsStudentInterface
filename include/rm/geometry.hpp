@@ -50,11 +50,13 @@ namespace rm
 
     bool collisionCheck(const Point &p, const Polygon &poly);
 
+    bool collisionCheck(const Point &p, const std::vector<Segment> &poly);
+
     bool collisionCheck(const Polygon &p0, const Polygon &p1);
 
     Box getBoundingBox(const Polygon &p);
 
     std::vector<Segment> getEdges(const Polygon &p);
 
-    bool isRightOfOrOn(const Point &p, const Segment &s);
+    bool isRightOf(const Point &p, const Segment &s);
 }

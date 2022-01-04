@@ -16,14 +16,15 @@ namespace rm
 
     bool collisionCheck(const Polygon &p0, const Polygon &p1)
     {
-        // Broad phase
+        // BROAD PHASE
         Box box0 = getBoundingBox(p0);
         Box box1 = getBoundingBox(p1);
 
         if (!collisionCheck(box0, box1))
             return false;
 
-        // Narrow phase
+        // NARROW PHASE
+        // 1) check for colliding edges
         std::vector<Segment> s0 = getEdges(p0);
         std::vector<Segment> s1 = getEdges(p1);
 
@@ -35,13 +36,23 @@ namespace rm
                     return true;
             }
         }
-
-        // TODO: complete narrow phase
+        // 2) verify if a polygon contains the other 
+        return collisionCheck(p0[0], s1) || collisionCheck(p1[0], s0);
     }
 
     bool collisionCheck(const Point &p, const Polygon &poly)
     {
+        return collisionCheck(p, getEdges(poly));
+    }
 
+    bool collisionCheck(const Point &p, const std::vector<Segment> &poly)
+    {
+        for (auto &s : poly)
+        {
+            if (!isRightOf(p, s))
+                return false;
+        }
+        return true;
     }
 
     bool collisionCheck(const Point &p, const Box &b)
@@ -93,8 +104,9 @@ namespace rm
         return out;
     }
 
-    bool isRightOfOrOn(const Point &p, const Segment &s)
+    bool isRightOf(const Point &p, const Segment &s)
     {
-        // TODO: implement isRightOfOrOn
+        float det = s.p0.x*(s.p1.y - p.y) + s.p0.y*(p.x - s.p1.x) + s.p1.x*p.y - s.p1.y*p.x;
+        return det > 0;
     }
 }

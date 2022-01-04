@@ -28,7 +28,7 @@ struct boost::polygon::geometry_concept<rm::Segment>
 };
 
 template <>
-struct boost::polygon::point_traits<rm::Segment>
+struct boost::polygon::segment_traits<rm::Segment>
 {
     typedef int coordinate_type;
     typedef Point point_type;
@@ -41,7 +41,7 @@ struct boost::polygon::point_traits<rm::Segment>
 
 namespace rm
 {
-    void maxClearance(const std::vector<Polygon> &obstacles, const Polygon &borders)
+    RoadMap &maxClearance(const std::vector<Polygon> &obstacles, const Polygon &borders)
     {
         // 1) Perform union of overlapping polygons
         const float scale = 1000;
@@ -78,6 +78,21 @@ namespace rm
         }
 
         // 3) Build voronoi diagram
-        
+        boost::polygon::voronoi_diagram<float> vd;
+        boost::polygon::construct_voronoi(map.begin(), map.end(), &vd);
+
+        // TODO: 4) Create roadmap
+        throw std::logic_error("ROADMAP CREATION AFTER VORONOI - NOT IMPLEMENTED");
+        RoadMap rm;
+        for (auto &edge : vd.edges())
+        {
+            if (edge.is_finite() && edge.is_primary())
+            {
+                size_t id0 = rm.addNode(Point(edge.vertex0()->x(), edge.vertex0()->y()));
+                size_t id1 = rm.addNode(Point(edge.vertex1()->x(), edge.vertex1()->y()));
+                rm.connect(id0, id1);
+            }
+        }
+        return rm;
     }
 }

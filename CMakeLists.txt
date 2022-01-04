@@ -23,6 +23,7 @@ add_subdirectory(lib/clipper)
 add_library(student SHARED
    src/student_interface.cpp
    src/rm/inflate.cpp
+   src/Dub_curves.cpp
 )
 
 target_link_libraries(student

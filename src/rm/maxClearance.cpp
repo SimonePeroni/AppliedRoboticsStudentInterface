@@ -90,12 +90,37 @@ namespace rm
 
         // 4) Create roadmap draft and revert scale
         RoadMap rm;
-        for (auto &edge : vd.edges())
+        for (auto const &edge : vd.edges())
         {
             if (edge.is_finite() && edge.is_primary())
             {
-                size_t id0 = rm.addNode(Point(edge.vertex0()->x() / scale, edge.vertex0()->y() / scale));
-                size_t id1 = rm.addNode(Point(edge.vertex1()->x() / scale, edge.vertex1()->y() / scale));
+                Point v0 = Point(edge.vertex0()->x() / scale, edge.vertex0()->y() / scale);
+                Point v1 = Point(edge.vertex1()->x() / scale, edge.vertex1()->y() / scale);
+
+                // Check if edge is inside obstacle
+                bool colliding = false;
+                for (auto &obst : obstacles)
+                {
+                    if (collisionCheck(v0, obst) || collisionCheck(v1, obst))
+                    {
+                        colliding = true;
+                        break;
+                    }
+                }
+                for (auto &vertex : borders)
+                {
+                    if (vertex.x == v0.x && vertex.y == v0.y || vertex.x == v1.x && vertex.y == v1.y)
+                    {
+                        colliding = true;
+                        break;
+                    }
+                }
+                if (colliding)
+                    continue;
+
+                // Not colliding: add edge to graph
+                size_t id0 = rm.addNode(v0);
+                size_t id1 = rm.addNode(v1);
                 rm.connect(id0, id1);
             }
         }

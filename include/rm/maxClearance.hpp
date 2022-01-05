@@ -7,5 +7,5 @@
 
 namespace rm
 {
-    RoadMap &maxClearance(const std::vector<Polygon> &obstacles, const Polygon &borders);
+    RoadMap maxClearance(const std::vector<Polygon> &obstacles, const Polygon &borders);
 }

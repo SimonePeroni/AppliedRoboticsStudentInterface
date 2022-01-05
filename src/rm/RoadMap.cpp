@@ -32,6 +32,8 @@ namespace rm
     RoadMap::Node &RoadMap::Edge::getToNode() const { return Node::getByID(_to); }
 
     // Node
+    std::vector<RoadMap::Node> RoadMap::Node::_all_nodes;
+    
     RoadMap::node_id RoadMap::Node::create(Point pos)
     {
         // Check if node exists

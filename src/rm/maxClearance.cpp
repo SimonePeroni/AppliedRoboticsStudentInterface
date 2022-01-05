@@ -4,44 +4,51 @@
 #include "boost/polygon/voronoi.hpp"
 #include "clipper/clipper.hpp"
 
-template <>
-struct boost::polygon::geometry_concept<Point>
+namespace boost
 {
-    typedef point_concept type;
-};
-
-template <>
-struct boost::polygon::point_traits<Point>
-{
-    typedef int coordinate_type;
-
-    static inline coordinate_type get(const Point &point, boost::polygon::orientation_2d orient)
+    namespace polygon
     {
-        return (orient == boost::polygon::HORIZONTAL) ? point.x : point.y;
-    }
-};
 
-template <>
-struct boost::polygon::geometry_concept<rm::Segment>
-{
-    typedef segment_concept type;
-};
+        template <>
+        struct geometry_concept<Point>
+        {
+            typedef point_concept type;
+        };
 
-template <>
-struct boost::polygon::segment_traits<rm::Segment>
-{
-    typedef int coordinate_type;
-    typedef Point point_type;
+        template <>
+        struct point_traits<Point>
+        {
+            typedef int coordinate_type;
 
-    static inline point_type get(const rm::Segment &segment, direction_1d dir)
-    {
-        return dir.to_int() ? segment.p1 : segment.p0;
-    }
-};
+            static inline coordinate_type get(const Point &point, orientation_2d orient)
+            {
+                return (orient == HORIZONTAL) ? point.x : point.y;
+            }
+        };
+
+        template <>
+        struct geometry_concept<rm::Segment>
+        {
+            typedef segment_concept type;
+        };
+
+        template <>
+        struct segment_traits<rm::Segment>
+        {
+            typedef int coordinate_type;
+            typedef Point point_type;
+
+            static inline point_type get(const rm::Segment &segment, direction_1d dir)
+            {
+                return dir.to_int() ? segment.p1 : segment.p0;
+            }
+        };
+    } // polygon
+} // boost
 
 namespace rm
 {
-    RoadMap &maxClearance(const std::vector<Polygon> &obstacles, const Polygon &borders)
+    RoadMap maxClearance(const std::vector<Polygon> &obstacles, const Polygon &borders)
     {
         // 1) Perform union of overlapping polygons
         const float scale = 1000;
@@ -78,7 +85,7 @@ namespace rm
         }
 
         // 3) Build voronoi diagram
-        boost::polygon::voronoi_diagram<float> vd;
+        boost::polygon::voronoi_diagram<double> vd;
         boost::polygon::construct_voronoi(map.begin(), map.end(), &vd);
 
         // TODO: 4) Create roadmap

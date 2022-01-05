@@ -88,8 +88,7 @@ namespace rm
         boost::polygon::voronoi_diagram<double> vd;
         boost::polygon::construct_voronoi(map.begin(), map.end(), &vd);
 
-        // TODO: 4) Create roadmap
-        throw std::logic_error("ROADMAP CREATION AFTER VORONOI - NOT IMPLEMENTED");
+        // 4) Create roadmap draft
         RoadMap rm;
         for (auto &edge : vd.edges())
         {

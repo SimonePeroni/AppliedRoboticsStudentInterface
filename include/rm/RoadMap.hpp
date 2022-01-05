@@ -42,7 +42,7 @@ namespace rm
 
             void connectTo(node_id to);
 
-            operator node_id() const { return _id; }
+            operator node_id() const;
 
         private:
             Node(node_id id, Point pos);

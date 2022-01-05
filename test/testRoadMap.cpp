@@ -4,6 +4,7 @@
 #include "rm/RoadMap.hpp"
 #include "rm/maxClearance.hpp"
 #include "rm/inflate.hpp"
+#include "rm/geometry.hpp"
 
 void pretty_print(Point point)
 {
@@ -31,8 +32,12 @@ int main()
 
     Polygon borders {Point(0, 0), Point(1, 0), Point(1, 1), Point(0, 1)};
 
+    std::cout << rm::collisionCheck(Point(0.5, -0.1), borders) << std::endl;
+
+    std::cout << rm::collisionCheck(Point(0.5, 0.5), borders) << std::endl;
+
     float offset = 0.05f;
-    std::vector<Polygon> infObstacles = rm::inflate(obstacles, offset);
+    std::vector<Polygon> infObstacles = rm::inflate(obstacles, offset, true);
     Polygon infBorders = rm::inflate(std::vector<Polygon>{borders}, -offset).back();
     
     std::cout << "number of inflated obstacles: " << infObstacles.size() << std::endl;

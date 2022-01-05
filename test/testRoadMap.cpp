@@ -5,6 +5,22 @@
 #include "rm/maxClearance.hpp"
 #include "rm/inflate.hpp"
 
+void pretty_print(Point point)
+{
+    std::cout << "Point(" << point.x << ", " << point.y << ")";
+}
+
+void pretty_print(Polygon poly)
+{
+    std::cout << "Polygon {";
+    for (Point p : poly)
+    {
+        pretty_print(p);
+        std::cout << " ";
+    }
+    std::cout << "}";
+}
+
 int main()
 {
     std::vector<Polygon> obstacles;
@@ -18,9 +34,20 @@ int main()
     float offset = 0.05f;
     std::vector<Polygon> infObstacles = rm::inflate(obstacles, offset);
     Polygon infBorders = rm::inflate(std::vector<Polygon>{borders}, -offset).back();
+    
+    std::cout << "number of inflated obstacles: " << infObstacles.size() << std::endl;
+    for (Polygon obst : infObstacles){
+        pretty_print(obst);
+        std::cout << std::endl;
+    }
+    pretty_print(infBorders);
+    std::cout << std::endl;
 
-    rm::RoadMap rm = rm::maxClearance(obstacles, borders);
+    rm::RoadMap rm = rm::maxClearance(infObstacles, infBorders);
 
+
+    std::cout << "number of nodes in rm: " << rm.getNodeCount() << std::endl;
+    std::cout << "number of global nodes: " << rm::RoadMap::Node::getTotalNodeCount() << std::endl;
     for (size_t i = 0; i < rm.getNodeCount(); i++)
     {
         auto node = rm.getNodeAt(i);

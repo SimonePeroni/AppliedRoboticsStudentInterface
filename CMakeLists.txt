@@ -21,8 +21,14 @@ add_subdirectory(lib/clipper)
 
 ## CREATE EXECUTABLE LIBRARY
 add_library(student SHARED
+  # interface
    src/student_interface.cpp
+  # roadmap
    src/rm/inflate.cpp
+   src/rm/maxClearance.cpp
+   src/rm/RoadMap.cpp
+   src/rm/geometry.cpp
+  # dubins
    src/dubCurves.cpp
 )
 

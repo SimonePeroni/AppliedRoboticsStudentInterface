@@ -32,13 +32,13 @@ namespace rm
         public:
             static node_id create(Point pos);
             static Node &getByID(node_id id);
-            static node_id getTotalNodeCount();
+            static size_t getTotalNodeCount();
 
             float getX() const;
             float getY() const;
             node_id getID() const;
-            node_id getPosesCount() const;
-            Orientation &getPose(node_id id);
+            size_t getPosesCount() const;
+            Orientation &getPose(size_t id);
 
             void connectTo(node_id to);
 
@@ -75,5 +75,9 @@ namespace rm
     public:
         node_id addNode(Point pos);
         void connect(node_id fromID, node_id toID);
+
+        size_t getNodeCount() const;
+
+        Node &getNodeAt(size_t index) const;
     }; // RoadMap
 }

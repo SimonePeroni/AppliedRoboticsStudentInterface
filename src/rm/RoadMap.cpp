@@ -16,6 +16,10 @@ namespace rm
         _edges.push_back(Edge(fromID, toID));
     }
 
+    size_t RoadMap::getNodeCount() const { return _nodes.size(); }
+
+    RoadMap::Node &RoadMap::getNodeAt(size_t index) const { return Node::getByID(_nodes[index]); }
+
     // Edge
     RoadMap::Edge::Edge(node_id from, node_id to) : _from(from), _to(to)
     {
@@ -41,7 +45,7 @@ namespace rm
         _all_nodes.push_back(Node(id, pos));
         return id;
     }
-    RoadMap::node_id RoadMap::Node::getTotalNodeCount() { return _all_nodes.size(); }
+    size_t RoadMap::Node::getTotalNodeCount() { return _all_nodes.size(); }
 
     RoadMap::Node::Node(node_id id, Point pos) : _pos(pos), _id(id) {}
 
@@ -51,7 +55,7 @@ namespace rm
 
     RoadMap::node_id RoadMap::Node::getID() const { return _id; }
 
-    RoadMap::node_id RoadMap::Node::getPosesCount() const { return _poses.size(); }
+    size_t RoadMap::Node::getPosesCount() const { return _poses.size(); }
 
     RoadMap::Node &RoadMap::Node::getByID(RoadMap::node_id id) { return _all_nodes.at(id); }
 

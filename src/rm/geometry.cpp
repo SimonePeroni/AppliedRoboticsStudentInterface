@@ -49,7 +49,7 @@ namespace rm
     {
         for (auto &s : poly)
         {
-            if (!isRightOf(p, s))
+            if (!isRightOfOrOn(p, s))
                 return false;
         }
         return true;
@@ -104,9 +104,9 @@ namespace rm
         return out;
     }
 
-    bool isRightOf(const Point &p, const Segment &s)
+    bool isRightOfOrOn(const Point &p, const Segment &s)
     {
         float det = s.p0.x*(s.p1.y - p.y) + s.p0.y*(p.x - s.p1.x) + s.p1.x*p.y - s.p1.y*p.x;
-        return det > 0;
+        return det >= 0;
     }
 }

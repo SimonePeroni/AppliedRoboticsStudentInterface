@@ -10,9 +10,10 @@ namespace rm
     /**
      * @brief Inflate polygons by specified offset value. 
      * 
-     * @param polygons  Collection of original polygons to inflate.
-     * @param offset    How much the polygon should be inflated.
-     * @return          Collection of inflated polygons.
+     * @param polygons   Collection of original polygons to inflate.
+     * @param offset     How much the polygon should be inflated.
+     * @param clockwise  Whether the results should be given in clockwise order.
+     * @return           Collection of inflated polygons.
      */
-    std::vector<Polygon> inflate(const std::vector<Polygon> &polygons, float offset);
+    std::vector<Polygon> inflate(const std::vector<Polygon> &polygons, float offset, bool clockwise = false);
 }

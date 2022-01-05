@@ -2,7 +2,7 @@
 
 namespace rm
 {
-    std::vector<Polygon> inflate(const std::vector<Polygon> &polygons, float offset)
+    std::vector<Polygon> inflate(const std::vector<Polygon> &polygons, float offset, bool clockwise)
     {
         std::vector<Polygon> inflatedPolygons;
 
@@ -22,12 +22,15 @@ namespace rm
         }
         co.Execute(inflatedPaths, offset * scale);
 
-        for (auto const &path : inflatedPaths)
+        for (auto &path : inflatedPaths)
         {
+            if (clockwise == ClipperLib::Orientation(path))
+                ClipperLib::ReversePath(path);
+
             Polygon p;
             for (auto const &vertex : path)
                 p.push_back(Point(vertex.X / scale, vertex.Y / scale));
-            
+
             inflatedPolygons.push_back(p);
         }
 

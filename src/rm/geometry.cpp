@@ -100,7 +100,7 @@ namespace rm
         {
             out.push_back(Segment(p[i - 1], p[i]));
         }
-        out.push_back(Segment(p[p.size()], p[0]));
+        out.push_back(Segment(p.back(), p[0]));
         return out;
     }
 

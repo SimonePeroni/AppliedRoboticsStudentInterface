@@ -4,6 +4,8 @@
 #include "boost/polygon/voronoi.hpp"
 #include "clipper/clipper.hpp"
 
+#include <iostream>
+
 namespace boost
 {
     namespace polygon
@@ -50,9 +52,9 @@ namespace rm
 {
     RoadMap maxClearance(const std::vector<Polygon> &obstacles, const Polygon &borders)
     {
-        // 1) Perform union of overlapping polygons
         const float scale = 1000;
 
+        // 1) Perform union of overlapping polygons
         ClipperLib::Paths joinedPaths;
         ClipperLib::Clipper clpr;
 
@@ -73,29 +75,29 @@ namespace rm
 
         clpr.Execute(ClipperLib::ctDifference, joinedPaths);
 
-        // 2) Segment list from geometry data
+        // 2) Scaled segment list from geometry data
         std::vector<Segment> map;
         for (auto const &path : joinedPaths)
         {
             Polygon p;
             for (auto const &vertex : path)
-                p.push_back(Point(vertex.X / scale, vertex.Y / scale));
+                p.push_back(Point(vertex.X, vertex.Y));
             for (auto const &edge : getEdges(p))
                 map.push_back(edge);
         }
 
-        // 3) Build voronoi diagram
+        // 3) Build scaled voronoi diagram
         boost::polygon::voronoi_diagram<double> vd;
         boost::polygon::construct_voronoi(map.begin(), map.end(), &vd);
 
-        // 4) Create roadmap draft
+        // 4) Create roadmap draft and revert scale
         RoadMap rm;
         for (auto &edge : vd.edges())
         {
             if (edge.is_finite() && edge.is_primary())
             {
-                size_t id0 = rm.addNode(Point(edge.vertex0()->x(), edge.vertex0()->y()));
-                size_t id1 = rm.addNode(Point(edge.vertex1()->x(), edge.vertex1()->y()));
+                size_t id0 = rm.addNode(Point(edge.vertex0()->x() / scale, edge.vertex0()->y() / scale));
+                size_t id1 = rm.addNode(Point(edge.vertex1()->x() / scale, edge.vertex1()->y() / scale));
                 rm.connect(id0, id1);
             }
         }

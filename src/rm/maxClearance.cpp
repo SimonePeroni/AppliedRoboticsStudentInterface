@@ -4,8 +4,6 @@
 #include "boost/polygon/voronoi.hpp"
 #include "clipper/clipper.hpp"
 
-#include <iostream>
-
 namespace boost
 {
     namespace polygon

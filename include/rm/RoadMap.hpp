@@ -19,6 +19,9 @@ namespace rm
             private:
                 float _theta;
                 Node *_parent;
+
+            public:
+                Orientation(Node *parent, float theta);
             };
 
         private:
@@ -38,7 +41,9 @@ namespace rm
             float getY() const;
             node_id getID() const;
             size_t getPosesCount() const;
-            Orientation &getPose(size_t id);
+            Orientation &getPose(size_t index);
+            void clearPoses();
+            size_t addPose(float theta);
 
             void connectTo(node_id to);
 
@@ -63,21 +68,16 @@ namespace rm
             Node &getToNode() const;
         }; // Edge
 
-        class OrientationEdge
-        {
-        }; // OrientationEdge
-
     private:
         std::vector<node_id> _nodes;
         std::vector<Edge> _edges;
-        std::vector<OrientationEdge *> _orientEdge;
 
     public:
         node_id addNode(Point pos);
         void connect(node_id fromID, node_id toID);
+        void build(unsigned int orientationsPerNode = 8);
 
         size_t getNodeCount() const;
-
         Node &getNodeAt(size_t index) const;
     }; // RoadMap
 }

@@ -1,5 +1,7 @@
 #include "rm/RoadMap.hpp"
 
+#include <cmath>
+
 namespace rm
 {
     // RoadMap
@@ -23,6 +25,29 @@ namespace rm
     size_t RoadMap::getNodeCount() const { return _nodes.size(); }
 
     RoadMap::Node &RoadMap::getNodeAt(size_t index) const { return Node::getByID(_nodes[index]); }
+
+    void RoadMap::build(unsigned int orientationsPerNode)
+    {
+        // Generate poses for each node
+        for (RoadMap::node_id id : _nodes)
+        {
+            Node node = Node::getByID(id);
+            node.clearPoses();
+            float theta = 2 * M_PI / orientationsPerNode;
+            for (unsigned int i = 0; i < orientationsPerNode; i++)
+            {
+                node.addPose(theta * i);
+            }
+        }
+
+        // Try to connect each pose of a node to each pose of another connected node
+        for (RoadMap::node_id id : _nodes)
+        {
+            Node node = Node::getByID(id);
+            
+            
+        }
+    }
 
     // Edge
     RoadMap::Edge::Edge(node_id from, node_id to) : _from(from), _to(to)
@@ -52,18 +77,18 @@ namespace rm
         return id;
     }
     size_t RoadMap::Node::getTotalNodeCount() { return _all_nodes.size(); }
-
     RoadMap::Node::Node(node_id id, Point pos) : _pos(pos), _id(id) {}
-
     float RoadMap::Node::getX() const { return _pos.x; }
-
     float RoadMap::Node::getY() const { return _pos.y; }
-
     RoadMap::node_id RoadMap::Node::getID() const { return _id; }
-
     size_t RoadMap::Node::getPosesCount() const { return _poses.size(); }
-
     RoadMap::Node &RoadMap::Node::getByID(RoadMap::node_id id) { return _all_nodes.at(id); }
+    void RoadMap::Node::clearPoses() { _poses.clear(); }
+
+    size_t RoadMap::Node::addPose(float theta)
+    {
+        _poses.push_back(Orientation(this, theta));
+    }
 
     void RoadMap::Node::connectTo(node_id to)
     {
@@ -80,4 +105,7 @@ namespace rm
     {
         return _id;
     }
+
+    // Node::Orientation
+    RoadMap::Node::Orientation::Orientation(Node *parent, float theta) : _parent(parent), _theta(theta) {}
 }

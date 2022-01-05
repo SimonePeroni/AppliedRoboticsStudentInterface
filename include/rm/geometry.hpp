@@ -58,5 +58,5 @@ namespace rm
 
     std::vector<Segment> getEdges(const Polygon &p);
 
-    bool isRightOf(const Point &p, const Segment &s);
+    bool isRightOfOrOn(const Point &p, const Segment &s);
 }

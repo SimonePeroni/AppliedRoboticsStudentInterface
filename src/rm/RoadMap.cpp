@@ -6,8 +6,12 @@ namespace rm
     RoadMap::node_id RoadMap::addNode(Point pos)
     {
         node_id id = Node::create(pos);
-        if (id == Node::getTotalNodeCount() - 1)
-            _nodes.push_back(id);
+        for (node_id existing : _nodes)
+        {
+            if (existing == id)
+                return id;
+        }
+        _nodes.push_back(id);
         return id;
     }
 
@@ -33,7 +37,7 @@ namespace rm
 
     // Node
     std::vector<RoadMap::Node> RoadMap::Node::_all_nodes;
-    
+
     RoadMap::node_id RoadMap::Node::create(Point pos)
     {
         // Check if node exists

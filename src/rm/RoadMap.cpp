@@ -7,24 +7,26 @@ namespace rm
     // RoadMap
     RoadMap::node_id RoadMap::addNode(Point pos)
     {
-        node_id id = Node::create(pos);
-        for (node_id existing : _nodes)
+        // Check if node exists
+        for (const auto &n : _nodes)
         {
-            if (existing == id)
-                return id;
+            if (n.getX() == pos.x && n.getY() == pos.y)
+                return n.getID();
         }
-        _nodes.push_back(id);
+
+        node_id id = _nodes.size();
+        _nodes.push_back(Node(this, id, pos));
         return id;
     }
 
     void RoadMap::connect(node_id fromID, node_id toID)
     {
-        _edges.push_back(Edge(fromID, toID));
+        _edges.push_back(Edge(this, fromID, toID));
     }
 
     size_t RoadMap::getNodeCount() const { return _nodes.size(); }
 
-    RoadMap::Node &RoadMap::getNodeAt(size_t index) const { return Node::getByID(_nodes[index]); }
+    RoadMap::Node &RoadMap::getNode(node_id id) { return _nodes[id]; }
 
     unsigned long RoadMap::build(unsigned int orientationsPerNode, float const &kmax, const std::vector<Polygon> &obstacles, const Polygon &borders)
     {
@@ -32,7 +34,7 @@ namespace rm
         // Generate poses for each node
         for (RoadMap::node_id id : _nodes)
         {
-            Node &node = Node::getByID(id);
+            Node &node = _nodes[id];
             node.clearPoses();
             float theta = 2 * M_PI / orientationsPerNode;
             for (unsigned int i = 0; i < orientationsPerNode; i++)
@@ -44,12 +46,12 @@ namespace rm
         // Try to connect each pose of a node to each pose of another connected node
         for (RoadMap::node_id id : _nodes)
         {
-            Node &node = Node::getByID(id);
+            Node &node = _nodes[id];
 
             //iterate over connected nodes
             for (size_t other_idx = 0; other_idx < node.getConnectedCount(); other_idx++)
             {
-                Node &other = Node::getByID(node.getConnected(other_idx));
+                Node &other = node.getConnected(other_idx);
 
                 //iterate over poses
                 for (size_t pose_idx = 0; pose_idx < node.getPosesCount(); pose_idx++)
@@ -71,43 +73,26 @@ namespace rm
     }
 
     // Edge
-    RoadMap::Edge::Edge(node_id from, node_id to) : _from(from), _to(to)
+    RoadMap::Edge::Edge(RoadMap *parent, node_id from, node_id to) : _from(from), _to(to), _parent(parent)
     {
-        Node::getByID(from).connectTo(to);
+        parent->getNode(from).connectTo(to);
     }
 
     RoadMap::node_id RoadMap::Edge::getFromID() const { return _from; }
     RoadMap::node_id RoadMap::Edge::getToID() const { return _to; }
-    RoadMap::Node &RoadMap::Edge::getFromNode() const { return Node::getByID(_from); }
-    RoadMap::Node &RoadMap::Edge::getToNode() const { return Node::getByID(_to); }
+    RoadMap::Node &RoadMap::Edge::getFromNode() const { return _parent->getNode(_from); }
+    RoadMap::Node &RoadMap::Edge::getToNode() const { return _parent->getNode(_to); }
 
     // Node
-    std::vector<RoadMap::Node> RoadMap::Node::_all_nodes;
-
-    RoadMap::node_id RoadMap::Node::create(Point pos)
-    {
-        // Check if node exists
-        for (const auto &n : _all_nodes)
-        {
-            if (n.getX() == pos.x && n.getY() == pos.y)
-                return n.getID();
-        }
-
-        node_id id = _all_nodes.size();
-        _all_nodes.push_back(Node(id, pos));
-        return id;
-    }
-    size_t RoadMap::Node::getTotalNodeCount() { return _all_nodes.size(); }
-    RoadMap::Node::Node(node_id id, Point pos) : _pos(pos), _id(id) {}
+    RoadMap::Node::Node(RoadMap *parent, node_id id, Point pos) : _pos(pos), _id(id), _parent(parent) {}
     float RoadMap::Node::getX() const { return _pos.x; }
     float RoadMap::Node::getY() const { return _pos.y; }
     RoadMap::node_id RoadMap::Node::getID() const { return _id; }
     size_t RoadMap::Node::getPosesCount() const { return _poses.size(); }
-    RoadMap::Node &RoadMap::Node::getByID(RoadMap::node_id id) { return _all_nodes.at(id); }
     void RoadMap::Node::clearPoses() { _poses.clear(); }
     RoadMap::Node::Orientation &RoadMap::Node::getPose(size_t index) { return _poses[index]; }
     size_t RoadMap::Node::getConnectedCount() const { return _connected.size(); }
-    RoadMap::Node &RoadMap::Node::getConnected(size_t index) { return getByID(_connected[index]); }
+    RoadMap::Node &RoadMap::Node::getConnected(size_t index) { return _parent->getNode(_connected[index]); }
 
     size_t RoadMap::Node::addPose(float theta)
     {

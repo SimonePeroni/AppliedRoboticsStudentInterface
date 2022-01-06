@@ -35,17 +35,15 @@ namespace rm
             };
 
         private:
-            static std::vector<Node> _all_nodes;
-
+            RoadMap *_parent;
+            size_t _idx_in_parent;
             node_id _id;
             Point _pos;
             std::vector<Orientation> _poses;
             std::vector<node_id> _connected;
 
         public:
-            static node_id create(Point pos);
-            static Node &getByID(node_id id);
-            static size_t getTotalNodeCount();
+            Node(RoadMap *parent, node_id id, Point pos);
 
             float getX() const;
             float getY() const;
@@ -60,9 +58,6 @@ namespace rm
             void connectTo(node_id to);
 
             operator node_id() const;
-
-        private:
-            Node(node_id id, Point pos);
         }; // Node
 
         class Edge
@@ -70,9 +65,10 @@ namespace rm
         private:
             node_id _from;
             node_id _to;
+            RoadMap *_parent;
 
         public:
-            Edge(node_id from, node_id to);
+            Edge(RoadMap *parent, node_id from, node_id to);
 
             node_id getFromID() const;
             node_id getToID() const;
@@ -91,7 +87,7 @@ namespace rm
         }; // DubinsConnection
 
     private:
-        std::vector<node_id> _nodes;
+        std::vector<Node> _nodes;
         std::vector<Edge> _edges;
 
     public:
@@ -100,6 +96,6 @@ namespace rm
         unsigned long build(unsigned int orientationsPerNode, float const &kmax, const std::vector<Polygon> &obstacles, const Polygon &borders);
 
         size_t getNodeCount() const;
-        Node &getNodeAt(size_t index) const;
+        Node &getNode(node_id id);
     }; // RoadMap
 }

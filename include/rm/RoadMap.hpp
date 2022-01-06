@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "utils.hpp"
+#include "dubins/dubins.hpp"
 
 namespace rm
 {
@@ -19,9 +20,15 @@ namespace rm
             private:
                 float _theta;
                 Node *_parent;
+                std::vector<rm::RoadMap::DubinsConnection> _connections;
 
             public:
                 Orientation(Node *parent, float theta);
+
+                bool connect(Orientation &other, float const &kmax, const std::vector<Polygon> &obstacles, const Polygon &borders);
+
+                float getTheta() const;
+                Node &getNode() const;
             };
 
         private:
@@ -42,6 +49,8 @@ namespace rm
             node_id getID() const;
             size_t getPosesCount() const;
             Orientation &getPose(size_t index);
+            size_t getConnectedCount() const;
+            Node &getConnected(size_t index);
             void clearPoses();
             size_t addPose(float theta);
 
@@ -68,6 +77,16 @@ namespace rm
             Node &getToNode() const;
         }; // Edge
 
+        struct DubinsConnection
+        {
+            Node::Orientation *from;
+            Node::Orientation *to;
+            dubins::DubinsCurve path;
+
+            inline DubinsConnection(Node::Orientation *from, Node::Orientation *to,
+                                    dubins::DubinsCurve path) : from(from), to(to), path(path) {}
+        }; // DubinsConnection
+
     private:
         std::vector<node_id> _nodes;
         std::vector<Edge> _edges;
@@ -75,7 +94,7 @@ namespace rm
     public:
         node_id addNode(Point pos);
         void connect(node_id fromID, node_id toID);
-        void build(unsigned int orientationsPerNode = 8);
+        unsigned long build(unsigned int orientationsPerNode, float const &kmax, const std::vector<Polygon> &obstacles, const Polygon &borders);
 
         size_t getNodeCount() const;
         Node &getNodeAt(size_t index) const;

@@ -26,8 +26,9 @@ namespace rm
 
     RoadMap::Node &RoadMap::getNodeAt(size_t index) const { return Node::getByID(_nodes[index]); }
 
-    void RoadMap::build(unsigned int orientationsPerNode)
+    unsigned long RoadMap::build(unsigned int orientationsPerNode, float const &kmax, const std::vector<Polygon> &obstacles, const Polygon &borders)
     {
+        unsigned long n_connections = 0L;
         // Generate poses for each node
         for (RoadMap::node_id id : _nodes)
         {
@@ -44,13 +45,29 @@ namespace rm
         for (RoadMap::node_id id : _nodes)
         {
             Node node = Node::getByID(id);
-            
+
             //iterate over connected nodes
+            for (size_t other_id = 0; other_id < node.getConnectedCount(); other_id++)
+            {
+                Node other = Node::getByID(other_id);
+
                 //iterate over poses
+                for (size_t pose_idx = 0; pose_idx < node.getPosesCount(); pose_idx++)
+                {
+                    Node::Orientation pose = node.getPose(pose_idx);
+
                     //iterate over poses of connected node
-                        //check if dubins connection between the two poses is feasible
-                        //if yes, add connection and save dubins
+                    for (size_t pose_other_idx = 0; pose_other_idx < other.getPosesCount(); pose_other_idx++)
+                    {
+                        Node::Orientation pose_other = node.getPose(pose_other_idx);
+
+                        if (pose.connect(pose_other, kmax, obstacles, borders))
+                            n_connections++;
+                    }
+                }
+            }
         }
+        return n_connections;
     }
 
     // Edge
@@ -88,6 +105,9 @@ namespace rm
     size_t RoadMap::Node::getPosesCount() const { return _poses.size(); }
     RoadMap::Node &RoadMap::Node::getByID(RoadMap::node_id id) { return _all_nodes.at(id); }
     void RoadMap::Node::clearPoses() { _poses.clear(); }
+    RoadMap::Node::Orientation &RoadMap::Node::getPose(size_t index) { return _poses[index]; }
+    size_t RoadMap::Node::getConnectedCount() const { return _connected.size(); }
+    RoadMap::Node &RoadMap::Node::getConnected(size_t index) { return getByID(_connected[index]); }
 
     size_t RoadMap::Node::addPose(float theta)
     {
@@ -112,4 +132,27 @@ namespace rm
 
     // Node::Orientation
     RoadMap::Node::Orientation::Orientation(Node *parent, float theta) : _parent(parent), _theta(theta) {}
+
+    bool RoadMap::Node::Orientation::connect(Orientation &other, float const &kmax, const std::vector<Polygon> &obstacles, const Polygon &borders)
+    {
+        dubins::DubinsCurve curve;
+        dubins::Pose2D start, end;
+        start.x = _parent->getX();
+        start.y = _parent->getY();
+        start.theta = _theta;
+        end.x = other._parent->getX();
+        end.y = other._parent->getY();
+        end.theta = other._theta;
+        bool success = dubins::findShortestPath(curve, start, end, kmax, obstacles, borders);
+        if (success)
+        {
+            _connections.push_back(RoadMap::DubinsConnection(this, &other, curve));
+            return true;
+        }
+        return false;
+    }
+
+    float RoadMap::Node::Orientation::getTheta() const { return _theta; }
+
+    RoadMap::Node &RoadMap::Node::Orientation::getNode() const { return *_parent; }
 }

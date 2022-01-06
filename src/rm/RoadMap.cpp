@@ -59,7 +59,7 @@ namespace rm
                     //iterate over poses of connected node
                     for (size_t pose_other_idx = 0; pose_other_idx < other.getPosesCount(); pose_other_idx++)
                     {
-                        Node::Orientation &pose_other = node.getPose(pose_other_idx);
+                        Node::Orientation &pose_other = other.getPose(pose_other_idx);
 
                         if (pose.connect(pose_other, kmax, obstacles, borders))
                             n_connections++;

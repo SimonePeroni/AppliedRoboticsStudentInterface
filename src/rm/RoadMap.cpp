@@ -45,7 +45,11 @@ namespace rm
         {
             Node node = Node::getByID(id);
             
-            
+            //iterate over connected nodes
+                //iterate over poses
+                    //iterate over poses of connected node
+                        //check if dubins connection between the two poses is feasible
+                        //if yes, add connection and save dubins
         }
     }
 

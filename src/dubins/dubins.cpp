@@ -320,17 +320,18 @@ namespace dubins
 
 	void discretize_arc(DubinsArc &full_arc, float &s, int &npts, std::vector<Path> &path)
 	{
-
+		throw std::logic_error("DUBINS - ARC DISCRETIZATION NOT IMPLEMENTED");
+		/*
 		int tmp = 0;
 		while (tmp <= npts)
 		{
 			DubinsArc small_arc;
 			float s_local = full_arc.s / npts * tmp;
 			tmp++;
-			set_DBNarc(small_arc, full_arc.start.x, full_arc.start.y, full_arc.start.theta, full_arc.k, s_local);
+			set_DBNarc(small_arc, full_arc.start, full_arc.k, s_local);
 			path.points.emplace_back(s_local, small_arc.end.x, small_arc.end.y, small_arc.end.theta, small_arc.k);
 
 			s = s + full_arc.s / npts;
-		}
+		}*/
 	}
 } // dubins

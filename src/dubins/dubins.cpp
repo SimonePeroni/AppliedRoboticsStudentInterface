@@ -15,6 +15,8 @@ using namespace std;
 
 namespace dubins
 {
+	float check_threshold = 1e-4;
+
 	// ------- Sinc function -----------------------------------------------------
 	float sinc(float t)
 	{
@@ -58,10 +60,9 @@ namespace dubins
 		float eq2 = s1 * sinc(0.5f * k0 * s1) * sin(th0 + 0.5f * k0 * s1) + s2 * sinc(0.5f * k1 * s2) * sin(th0 + k0 * s1 + 0.5f * k1 * s2) + s3 * sinc(0.5f * k2 * s3) * sin(th0 + k0 * s1 + k1 * s2 + 0.5f * k2 * s3);
 		float eq3 = normAngle(k0 * s1 + k1 * s2 + k2 * s3 + th0 - thf);
 
-		float sqt = sqrt(eq1 * eq1 + eq2 * eq2 + eq3 * eq3);
-		float thresh = 1e-5;
+		float err = sqrt(eq1 * eq1 + eq2 * eq2 + eq3 * eq3);
 
-		bool tmp = ((s1 > 0) || (s2 > 0) || (s3 > 0)) && (sqt < thresh);
+		bool tmp = ((s1 > 0) || (s2 > 0) || (s3 > 0)) && (err < check_threshold);
 
 		return tmp;
 	}

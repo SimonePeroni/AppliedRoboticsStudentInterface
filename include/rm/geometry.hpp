@@ -1,6 +1,7 @@
 #pragma once
 
 #include "utils.hpp"
+#include "dubins/dubins.hpp"
 
 namespace rm
 {
@@ -53,6 +54,24 @@ namespace rm
     bool collisionCheck(const Point &p, const std::vector<Segment> &poly);
 
     bool collisionCheck(const Polygon &p0, const Polygon &p1);
+
+    bool collisionCheck(const Segment &s, const Polygon &p);
+
+    bool collisionCheck(const dubins::DubinsArc &arc, const Polygon &p);
+
+    /**
+     * @brief           Check collision between a circle-arc and a segment.
+     * 
+     * @param rho       Radius of arc. If positive, the arc takes a left turn from th0 to th1. If negative, the arc takes a right turn from th0 to th1.
+     * @param center    Center of curvature.
+     * @param th0       Starting angle of arc, given counter-clockwise with respect to positive x axis direction.
+     * @param th1       End angle of arc, given counter-clockwise with respect to positive x axis direction.
+     * @param s         Segment to verify collision with.
+     * @return          true if a collision between the arc and the segment was detected, false otherwise.
+     */
+    bool collisionCheck(const float &rho, const Point &c, const float &th0, const float &th1, const Segment &s);
+
+    bool collisionCheck(const dubins::DubinsCurve &curve, const Polygon &p);
 
     Box getBoundingBox(const Polygon &p);
 

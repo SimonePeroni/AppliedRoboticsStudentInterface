@@ -30,6 +30,8 @@ add_library(student SHARED
    src/rm/geometry.cpp
   # dubins
    src/dubins/dubins.cpp
+  # navigation
+   src/nav/dijkstra.cpp
 )
 
 target_link_libraries(student

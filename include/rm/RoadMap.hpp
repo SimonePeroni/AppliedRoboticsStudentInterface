@@ -34,6 +34,7 @@ namespace rm
                 Node &getNode() const;
                 size_t getConnectionCount() const;
                 rm::RoadMap::DubinsConnection &getConnection(size_t index);
+                const rm::RoadMap::DubinsConnection &getConnection(size_t index) const;
                 operator size_t() const;
             };
 

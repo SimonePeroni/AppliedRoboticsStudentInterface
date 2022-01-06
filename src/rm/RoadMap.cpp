@@ -144,5 +144,6 @@ namespace rm
     RoadMap::Node &RoadMap::Node::Orientation::getNode() const { return *_parent; }
     size_t RoadMap::Node::Orientation::getConnectionCount() const { return _connections.size(); }
     rm::RoadMap::DubinsConnection &RoadMap::Node::Orientation::getConnection(size_t index) { return _connections[index]; };
+    const rm::RoadMap::DubinsConnection &RoadMap::Node::Orientation::getConnection(size_t index) const { return _connections[index]; };
     RoadMap::Node::Orientation::operator std::size_t() const { return _id; }
 }

@@ -32,7 +32,7 @@ namespace rm
         // Generate poses for each node
         for (RoadMap::node_id id : _nodes)
         {
-            Node node = Node::getByID(id);
+            Node &node = Node::getByID(id);
             node.clearPoses();
             float theta = 2 * M_PI / orientationsPerNode;
             for (unsigned int i = 0; i < orientationsPerNode; i++)
@@ -44,22 +44,22 @@ namespace rm
         // Try to connect each pose of a node to each pose of another connected node
         for (RoadMap::node_id id : _nodes)
         {
-            Node node = Node::getByID(id);
+            Node &node = Node::getByID(id);
 
             //iterate over connected nodes
             for (size_t other_id = 0; other_id < node.getConnectedCount(); other_id++)
             {
-                Node other = Node::getByID(other_id);
+                Node &other = Node::getByID(other_id);
 
                 //iterate over poses
                 for (size_t pose_idx = 0; pose_idx < node.getPosesCount(); pose_idx++)
                 {
-                    Node::Orientation pose = node.getPose(pose_idx);
+                    Node::Orientation &pose = node.getPose(pose_idx);
 
                     //iterate over poses of connected node
                     for (size_t pose_other_idx = 0; pose_other_idx < other.getPosesCount(); pose_other_idx++)
                     {
-                        Node::Orientation pose_other = node.getPose(pose_other_idx);
+                        Node::Orientation &pose_other = node.getPose(pose_other_idx);
 
                         if (pose.connect(pose_other, kmax, obstacles, borders))
                             n_connections++;

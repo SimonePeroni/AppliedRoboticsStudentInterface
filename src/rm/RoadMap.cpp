@@ -47,9 +47,9 @@ namespace rm
             Node &node = Node::getByID(id);
 
             //iterate over connected nodes
-            for (size_t other_id = 0; other_id < node.getConnectedCount(); other_id++)
+            for (size_t other_idx = 0; other_idx < node.getConnectedCount(); other_idx++)
             {
-                Node &other = Node::getByID(other_id);
+                Node &other = Node::getByID(node.getConnected(other_idx));
 
                 //iterate over poses
                 for (size_t pose_idx = 0; pose_idx < node.getPosesCount(); pose_idx++)

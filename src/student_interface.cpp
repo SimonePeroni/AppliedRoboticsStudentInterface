@@ -1,10 +1,27 @@
 #include "student_image_elab_interface.hpp"
 #include "student_planning_interface.hpp"
+#include<iostream>
+#include<cmath>
+#include<algorithm>
+#include<limits.h>
+#include<vector>
+#include <opencv2/opencv.hpp>
+#include "opencv2/core.hpp"
+#include "opencv2/highgui.hpp"
+
+#include"RoadMap.hpp"
+#include"dubCurves.hpp"
+#include"geometry.hpp"
+#include"inflate.hpp"
+#include"MaxClearance.hpp"
+#include "clipper/clipper.hpp"
 
 #include <stdexcept>
 #include <sstream>
 
+using namespace cv;
 namespace student
+namespace rm 
 {
 
   void loadImage(cv::Mat &img_out, const std::string &config_folder)
@@ -55,13 +72,16 @@ namespace student
 
   bool planPath(const Polygon &borders, const std::vector<Polygon> &obstacle_list, const std::vector<Polygon> &gate_list, const std::vector<float> x, const std::vector<float> y, const std::vector<float> theta, std::vector<Path> &path, const std::string &config_folder)
   {
-    throw std::logic_error("STUDENT FUNCTION - PLAN PATH - NOT IMPLEMENTED");
+    //throw std::logic_error("STUDENT FUNCTION - PLAN PATH - NOT IMPLEMENTED");
 
-    // TODO: Inflate obstacles
-    // TODO: Construct maximum clearance graph
-    // TODO: Build multilayer roadmap with finite set of orientations per node - connect only feasible dubins and save length of each edge
-    // TODO: Implement optimal path finding algorithm
+    // TODO: Inflate obstacles. -- Implemented 
+    // TODO: Construct maximum clearance graph. -- Implemented 
+    // TODO: Build multilayer roadmap with finite set of orientations per node - connect only feasible dubins and save length of each edge. -- Implemented 
+    // TODO: Implement optimal path finding algorithm. -- Dijkstra 
     // TODO: Plan evader movements - random switch between gates at each node
     // TODO: Plan pursuer movements according to evader state (synchronously! Can not use information about future states of the evader, only know which node it is heading to next)
+  
+  return true;
   }
 }
+

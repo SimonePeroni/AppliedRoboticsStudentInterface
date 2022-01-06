@@ -40,6 +40,17 @@ namespace dubins
 		return angle;
 	}
 
+	// --------------- We need this function to normalize the angle in the range -180 to 180 deg --------------------------------
+
+	float normAngle(float ang) {
+		float p = 2.0f * M_PI;
+		while (ang <= -M_PI)
+			ang = ang + p;
+		while (ang > M_PI)
+			ang = ang - p;
+		return ang;
+	}
+
 	// --------------------------------------
 	bool check(float const &s1, float const &k0, float const &s2, float const &k1, float const &s3, float const &k2, float const &th0, float const &thf)
 	{
@@ -51,10 +62,10 @@ namespace dubins
 
 		float eq1 = x0 + s1 * sinc((1 / 2.0) * k0 * s1) * cos(th0 + (1 / 2.0) * k0 * s1) + s2 * sinc((1 / 2.0) * k1 * s2) * cos(th0 + k0 * s1 + (1 / 2.0) * k1 * s2) + s3 * sinc((1 / 2.0) * k2 * s3) * cos(th0 + k0 * s1 + k1 * s2 + (1 / 2.0) * k2 * s3) - xf;
 		float eq2 = y0 + s1 * sinc((1 / 2.0) * k0 * s1) * sin(th0 + (1 / 2.0) * k0 * s1) + s2 * sinc((1 / 2.0) * k1 * s2) * sin(th0 + k0 * s1 + (1 / 2.0) * k1 * s2) + s3 * sinc((1 / 2.0) * k2 * s3) * sin(th0 + k0 * s1 + k1 * s2 + (1 / 2.0) * k2 * s3) - yf;
-		float eq3 = mod2pi(x0 * s1 + k1 * s2 + k2 * s3 + th0 + thf);
+		float eq3 = normAngle(x0 * s1 + k1 * s2 + k2 * s3 + th0 - thf);
 
 		float sqt = sqrt(eq1 * eq1 + eq2 * eq2 + eq3 * eq3);
-		double thresh = 1e-10;
+		float thresh = 1e-10;
 
 		bool tmp = ((s1 > 0) || (s2 > 0) || (s3 > 0)) && (sqt < thresh);
 

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <chrono>
 
 #include "rm/RoadMap.hpp"
 #include "rm/maxClearance.hpp"
@@ -30,14 +31,15 @@ int main()
     obstacles.push_back(Polygon{Point(0.20, 0.15), Point(0.10, 0.25),
                                 Point(0.20, 0.35), Point(0.30, 0.25)});
 
-    Polygon borders {Point(0, 0), Point(1, 0), Point(1, 1), Point(0, 1)};
+    Polygon borders{Point(0, 0), Point(1, 0), Point(1, 1), Point(0, 1)};
 
     float offset = 0.05f;
     std::vector<Polygon> infObstacles = rm::inflate(obstacles, offset, true);
     Polygon infBorders = rm::inflate(std::vector<Polygon>{borders}, -offset).back();
-    
+
     std::cout << "number of inflated obstacles: " << infObstacles.size() << std::endl;
-    for (Polygon obst : infObstacles){
+    for (Polygon obst : infObstacles)
+    {
         pretty_print(obst);
         std::cout << std::endl;
     }
@@ -46,16 +48,24 @@ int main()
 
     rm::RoadMap rm = rm::maxClearance(infObstacles, infBorders);
 
-
     std::cout << "number of nodes in rm: " << rm.getNodeCount() << std::endl;
     std::cout << "number of global nodes: " << rm::RoadMap::Node::getTotalNodeCount() << std::endl;
-    for (size_t i = 0; i < rm.getNodeCount(); i++)
+/*     for (size_t i = 0; i < rm.getNodeCount(); i++)
     {
         auto node = rm.getNodeAt(i);
         std::cout << "Node_" << node.getID() << std::endl
                   << " X: " << node.getX() << std::endl
                   << " Y: " << node.getY() << std::endl;
+    } */
+    for (size_t i = 0; i < rm.getNodeCount(); i++)
+    {
+        auto node = rm.getNodeAt(i);
+        std::cout << "plot(" << node.getX() << ", " << node.getY() << ", '*')" << std::endl;
     }
+    auto tic = std::chrono::high_resolution_clock::now();
     auto n_connections = rm.build(8, 100, infObstacles, infBorders);
-    std::cout << "Number of dubins connections between nodes: " << n_connections << std::endl;
+    auto toc = std::chrono::high_resolution_clock::now();
+
+    std::chrono::duration<float, std::milli> duration = toc - tic;
+    std::cout << "Generated" << n_connections << " dubins connections in " << duration.count() << " milliseconds." << std::endl;
 }

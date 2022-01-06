@@ -10,6 +10,7 @@ namespace rm
     class RoadMap
     {
     public:
+        struct DubinsConnection;
         typedef size_t node_id;
 
         class Node

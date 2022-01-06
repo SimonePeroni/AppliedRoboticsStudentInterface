@@ -29,7 +29,7 @@ add_library(student SHARED
    src/rm/RoadMap.cpp
    src/rm/geometry.cpp
   # dubins
-  # src/dubCurves.cpp
+   src/dubins/dubins.cpp
 )
 
 target_link_libraries(student

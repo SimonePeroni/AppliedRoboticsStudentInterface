@@ -56,4 +56,6 @@ int main()
                   << " X: " << node.getX() << std::endl
                   << " Y: " << node.getY() << std::endl;
     }
+    auto n_connections = rm.build(8, 100, infObstacles, infBorders);
+    std::cout << "Number of dubins connections between nodes: " << n_connections << std::endl;
 }

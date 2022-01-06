@@ -12,6 +12,8 @@ namespace dubins
 
     float mod2pi(float angle);
 
+    float normAngle(float ang);
+
     // ---------------- Struct defining the position of the robot ---------------------------------------------------------------------------
 
     struct Pose2D

@@ -54,18 +54,12 @@ namespace dubins
 	// --------------------------------------
 	bool check(float const &s1, float const &k0, float const &s2, float const &k1, float const &s3, float const &k2, float const &th0, float const &thf)
 	{
-
-		float x0 = -1.f;
-		float xf = 1.f;
-		float y0 = 0.f;
-		float yf = 0.f;
-
-		float eq1 = x0 + s1 * sinc((1 / 2.0) * k0 * s1) * cos(th0 + (1 / 2.0) * k0 * s1) + s2 * sinc((1 / 2.0) * k1 * s2) * cos(th0 + k0 * s1 + (1 / 2.0) * k1 * s2) + s3 * sinc((1 / 2.0) * k2 * s3) * cos(th0 + k0 * s1 + k1 * s2 + (1 / 2.0) * k2 * s3) - xf;
-		float eq2 = y0 + s1 * sinc((1 / 2.0) * k0 * s1) * sin(th0 + (1 / 2.0) * k0 * s1) + s2 * sinc((1 / 2.0) * k1 * s2) * sin(th0 + k0 * s1 + (1 / 2.0) * k1 * s2) + s3 * sinc((1 / 2.0) * k2 * s3) * sin(th0 + k0 * s1 + k1 * s2 + (1 / 2.0) * k2 * s3) - yf;
-		float eq3 = normAngle(x0 * s1 + k1 * s2 + k2 * s3 + th0 - thf);
+		float eq1 = s1 * sinc(0.5f * k0 * s1) * cos(th0 + 0.5f * k0 * s1) + s2 * sinc(0.5f * k1 * s2) * cos(th0 + k0 * s1 + 0.5f * k1 * s2) + s3 * sinc(0.5f * k2 * s3) * cos(th0 + k0 * s1 + k1 * s2 + 0.5f * k2 * s3) - 2.f;
+		float eq2 = s1 * sinc(0.5f * k0 * s1) * sin(th0 + 0.5f * k0 * s1) + s2 * sinc(0.5f * k1 * s2) * sin(th0 + k0 * s1 + 0.5f * k1 * s2) + s3 * sinc(0.5f * k2 * s3) * sin(th0 + k0 * s1 + k1 * s2 + 0.5f * k2 * s3);
+		float eq3 = normAngle(k0 * s1 + k1 * s2 + k2 * s3 + th0 - thf);
 
 		float sqt = sqrt(eq1 * eq1 + eq2 * eq2 + eq3 * eq3);
-		float thresh = 1e-10;
+		float thresh = 1e-5;
 
 		bool tmp = ((s1 > 0) || (s2 > 0) || (s3 > 0)) && (sqt < thresh);
 
@@ -220,7 +214,7 @@ namespace dubins
 		float C = cos(sc_thf) - cos(sc_th0);
 		float S = 2.0 * sc_kmax + sin(sc_th0) - sin(sc_thf);
 		float temp1 = atan2(C, S);
-		float temp2 = 0.125 * (6.0 - 4.0 * pow(sc_kmax, 2) + 2.0 * cos(sc_th0 - sc_thf) + 4.0 * sc_kmax * (sin(sc_th0) - sin(sc_thf)));
+		float temp2 = 0.125 * (6.0 - 4.0 * pow(sc_kmax, 2) + 2.0 * cos(sc_th0 - sc_thf) - 4.0 * sc_kmax * (sin(sc_th0) - sin(sc_thf)));
 		if (abs(temp2) > 1.0)
 		{
 

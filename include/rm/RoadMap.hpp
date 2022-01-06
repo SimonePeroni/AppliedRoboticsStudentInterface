@@ -54,6 +54,7 @@ namespace rm
             Node &getConnected(size_t index);
             void clearPoses();
             size_t addPose(float theta);
+            RoadMap &getRoadMap();
 
             void connectTo(node_id to);
 
@@ -74,6 +75,7 @@ namespace rm
             node_id getToID() const;
             Node &getFromNode() const;
             Node &getToNode() const;
+            RoadMap &getRoadMap();
         }; // Edge
 
         struct DubinsConnection

@@ -82,6 +82,7 @@ namespace rm
     RoadMap::node_id RoadMap::Edge::getToID() const { return _to; }
     RoadMap::Node &RoadMap::Edge::getFromNode() const { return _parent->getNode(_from); }
     RoadMap::Node &RoadMap::Edge::getToNode() const { return _parent->getNode(_to); }
+    RoadMap &RoadMap::Edge::getRoadMap() { return *_parent; }
 
     // Node
     RoadMap::Node::Node(RoadMap *parent, node_id id, Point pos) : _pos(pos), _id(id), _parent(parent) {}
@@ -93,6 +94,7 @@ namespace rm
     RoadMap::Node::Orientation &RoadMap::Node::getPose(size_t index) { return _poses[index]; }
     size_t RoadMap::Node::getConnectedCount() const { return _connected.size(); }
     RoadMap::Node &RoadMap::Node::getConnected(size_t index) { return _parent->getNode(_connected[index]); }
+    RoadMap &RoadMap::Node::getRoadMap() { return *_parent; }
 
     size_t RoadMap::Node::addPose(float theta)
     {

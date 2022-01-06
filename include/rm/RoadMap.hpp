@@ -22,16 +22,19 @@ namespace rm
                 float _theta;
                 Node *_parent;
                 std::vector<rm::RoadMap::DubinsConnection> _connections;
+                size_t _id;
 
             public:
-                Orientation(Node *parent, float theta);
+                Orientation(Node *parent, size_t id, float theta);
 
                 bool connect(Orientation &other, float const &kmax, const std::vector<Polygon> &obstacles, const Polygon &borders);
 
                 float getTheta() const;
+                size_t getID() const;
                 Node &getNode() const;
                 size_t getConnectionCount() const;
                 rm::RoadMap::DubinsConnection &getConnection(size_t index);
+                operator size_t() const;
             };
 
         private:

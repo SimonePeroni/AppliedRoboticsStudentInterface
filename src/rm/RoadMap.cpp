@@ -98,7 +98,7 @@ namespace rm
 
     size_t RoadMap::Node::addPose(float theta)
     {
-        _poses.push_back(Orientation(this, theta));
+        _poses.push_back(Orientation(this, _poses.size(), theta));
     }
 
     void RoadMap::Node::connectTo(node_id to)
@@ -118,7 +118,7 @@ namespace rm
     }
 
     // Node::Orientation
-    RoadMap::Node::Orientation::Orientation(Node *parent, float theta) : _parent(parent), _theta(theta) {}
+    RoadMap::Node::Orientation::Orientation(Node *parent, size_t id, float theta) : _parent(parent), _id(id), _theta(theta) {}
 
     bool RoadMap::Node::Orientation::connect(Orientation &other, float const &kmax, const std::vector<Polygon> &obstacles, const Polygon &borders)
     {
@@ -140,7 +140,9 @@ namespace rm
     }
 
     float RoadMap::Node::Orientation::getTheta() const { return _theta; }
+    size_t RoadMap::Node::Orientation::getID() const { return _id; }
     RoadMap::Node &RoadMap::Node::Orientation::getNode() const { return *_parent; }
     size_t RoadMap::Node::Orientation::getConnectionCount() const { return _connections.size(); }
     rm::RoadMap::DubinsConnection &RoadMap::Node::Orientation::getConnection(size_t index) { return _connections[index]; };
+    RoadMap::Node::Orientation::operator std::size_t() const { return _id; }
 }

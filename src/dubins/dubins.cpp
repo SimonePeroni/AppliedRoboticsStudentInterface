@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <limits>
+#include <stdexcept>
 
 #include "dubins/dubins.hpp"
 #include "utils.hpp"
@@ -17,7 +18,7 @@ namespace dubins
 	float sinc(float t)
 	{
 		if (abs(t) < 0.002)
-			return 1 - t*t / 120.f * (20.0f - t*t); // ---- Taylor series approximation
+			return 1 - t * t / 120.f * (20.0f - t * t); // ---- Taylor series approximation
 		else
 			return sin(t) / t;
 	}
@@ -39,22 +40,22 @@ namespace dubins
 	}
 
 	// --------------------------------------
-	bool control(float const &s1, float const &k0, float const &s2, float const &k1, float const &s3, float const &k2, Pose2D start, Pose2D end)
+	bool check(float const &s1, float const &k0, float const &s2, float const &k1, float const &s3, float const &k2, float const &th0, float const &thf)
 	{
 
-		float x0 = start.x = -1;
-		float xf = end.x = 1;
-		float y0 = start.y = 0;
-		float yf = end.y = 0;
+		float x0 = -1.f;
+		float xf = 1.f;
+		float y0 = 0.f;
+		float yf = 0.f;
 
-		float eq1 = x0 + s1 * sinc((1 / 2.0) * k0 * s1) * cos(start.theta + (1 / 2.0) * k0 * s1) + s2 * sinc((1 / 2.0) * k1 * s2) * cos(start.theta + k0 * s1 + (1 / 2.0) * k1 * s2) + s3 * sinc((1 / 2.0) * k2 * s3) * cos(start.theta + k0 * s1 + k1 * s2 + (1 / 2.0) * k2 * s3) - xf;
-		float eq2 = y0 + s1 * sinc((1 / 2.0) * k0 * s1) * sin(start.theta + (1 / 2.0) * k0 * s1) + s2 * sinc((1 / 2.0) * k1 * s2) * sin(start.theta + k0 * s1 + (1 / 2.0) * k1 * s2) + s3 * sinc((1 / 2.0) * k2 * s3) * sin(start.theta + k0 * s1 + k1 * s2 + (1 / 2.0) * k2 * s3) - yf;
-		float eq3 = mod2pi(x0 * s1 + k1 * s2 + k2 * s3 + start.theta + end.theta);
+		float eq1 = x0 + s1 * sinc((1 / 2.0) * k0 * s1) * cos(th0 + (1 / 2.0) * k0 * s1) + s2 * sinc((1 / 2.0) * k1 * s2) * cos(th0 + k0 * s1 + (1 / 2.0) * k1 * s2) + s3 * sinc((1 / 2.0) * k2 * s3) * cos(th0 + k0 * s1 + k1 * s2 + (1 / 2.0) * k2 * s3) - xf;
+		float eq2 = y0 + s1 * sinc((1 / 2.0) * k0 * s1) * sin(th0 + (1 / 2.0) * k0 * s1) + s2 * sinc((1 / 2.0) * k1 * s2) * sin(th0 + k0 * s1 + (1 / 2.0) * k1 * s2) + s3 * sinc((1 / 2.0) * k2 * s3) * sin(th0 + k0 * s1 + k1 * s2 + (1 / 2.0) * k2 * s3) - yf;
+		float eq3 = mod2pi(x0 * s1 + k1 * s2 + k2 * s3 + th0 + thf);
 
-		float sqt = sqrt(pow(eq1, 2) + pow(eq2, 2) + pow(eq3, 2));
+		float sqt = sqrt(eq1 * eq1 + eq2 * eq2 + eq3 * eq3);
 		double thresh = 1e-10;
 
-		bool tmp = ((s1 > 0) or (s2 > 0) or (s3 > 0)) and (sqt < thresh);
+		bool tmp = ((s1 > 0) || (s2 > 0) || (s3 > 0)) && (sqt < thresh);
 
 		return tmp;
 	}
@@ -226,7 +227,7 @@ namespace dubins
 	}
 
 	// ----- Function to implement a structure representing a Dubins arc for both straight and circular ----------------------------------------------------
-	void set_DBNarc(DubinsArc &ptr, Pose2D start, float k, float s)
+	void set_DBNarc(DubinsArc &ptr, const Pose2D &start, float k, float s)
 	{
 
 		ptr.start.x = start.x;
@@ -240,13 +241,13 @@ namespace dubins
 	}
 
 	// ----- Function to implement a structure representing 3 arcs which make up the Dubins curve ------------------------------------------
-	void set_DBNcurve(DubinsCurve &curve_ptr, Pose2D start, float s1, float s2, float s3, float k0, float k1, float k2)
+	void set_DBNcurve(DubinsCurve &curve, const Pose2D &start, float s1, float s2, float s3, float k0, float k1, float k2)
 	{
 
-		set_DBNarc(curve_ptr.arc_1, start, k0, s1);
-		set_DBNarc(curve_ptr.arc_2, curve_ptr.arc_1.end.x, curve_ptr.arc_1.end.y, curve_ptr.arc_1.end.theta, k1, s2);
-		set_DBNarc(curve_ptr.arc_3, curve_ptr.arc_2.end.x, curve_ptr.arc_2.end.y, curve_ptr.arc_2.end.theta, k2, s3);
-		curve_ptr.L = curve_ptr.arc_1.s + curve_ptr.arc_2.s + curve_ptr.arc_3.s;
+		set_DBNarc(curve.arc_1, start, k0, s1);
+		set_DBNarc(curve.arc_2, curve.arc_1.end, k1, s2);
+		set_DBNarc(curve.arc_3, curve.arc_2.end, k2, s3);
+		curve.L = curve.arc_1.s + curve.arc_2.s + curve.arc_3.s;
 	}
 
 	// ----- Function to find the shortest path ---------------------------------------------------------------------------------------------
@@ -256,29 +257,35 @@ namespace dubins
 		float lambda;
 		scaleToStandard(start, end, kmax, sc_th0, sc_thf, sc_kmax, lambda);
 
-		typedef void (*type0)(float, float, float, bool &, float &, float &, float &);
+		typedef void (*maneuver)(float, float, float, bool &, float &, float &, float &);
 
-		void (*LSL_ptr)(float, float, float, bool &, float &, float &, float &) = &LSL;
-		void (*RSR_ptr)(float, float, float, bool &, float &, float &, float &) = &RSR;
-		void (*LSR_ptr)(float, float, float, bool &, float &, float &, float &) = &LSR;
-		void (*RSL_ptr)(float, float, float, bool &, float &, float &, float &) = &RSL;
-		void (*RLR_ptr)(float, float, float, bool &, float &, float &, float &) = &RLR;
-		void (*LRL_ptr)(float, float, float, bool &, float &, float &, float &) = &LRL;
+		maneuver LSL_ptr = &LSL;
+		maneuver RSR_ptr = &RSR;
+		maneuver LSR_ptr = &LSR;
+		maneuver RSL_ptr = &RSL;
+		maneuver RLR_ptr = &RLR;
+		maneuver LRL_ptr = &LRL;
 
-		type0 primitives[6] = {LSL_ptr, RSR_ptr, LSR_ptr, RSL_ptr, RLR_ptr, LRL_ptr};
-		int ksigns[6][3] = {{1, 0, 1}, {-1, 0, -1}, {1, 0, -1}, {-1, 0, 1}, {-1, 1, -1}, {1, -1, 1}};
+		maneuver primitives[6] = {LSL_ptr, RSR_ptr, LSR_ptr, RSL_ptr, RLR_ptr, LRL_ptr};
+		int ksigns[6][3] = {
+				{1, 0, 1},	 //LSL
+				{-1, 0, -1}, //RSR
+				{1, 0, -1},  //LSR
+				{-1, 0, 1},  //RSL
+				{-1, 1, -1}, //RLR
+				{1, -1, 1}}; //LRL
 
-		int pidx = -1.0;
+		int pidx = -1;
 		double L = numeric_limits<double>::infinity(); // Infinite value
 		bool ctrl;
 		float s1, s2, s3;
 		float sc_s1, sc_s2, sc_s3;
 		float sc_s1_c, sc_s2_c, sc_s3_c;
 		int Lcur;
-		int tmp = 0;
-		while (tmp < 6)
+
+		for (size_t i = 0; i < 6; i++)
 		{
-			primitives[tmp](sc_th0, sc_thf, sc_kmax, ctrl, sc_s1_c, sc_s2_c, sc_s3_c);
+			primitives[i](sc_th0, sc_thf, sc_kmax, ctrl, sc_s1_c, sc_s2_c, sc_s3_c);
 
 			Lcur = sc_s1_c + sc_s2_c + sc_s3_c;
 			if (ctrl and Lcur < L)
@@ -287,9 +294,8 @@ namespace dubins
 				sc_s1 = sc_s1_c;
 				sc_s2 = sc_s2_c;
 				sc_s3 = sc_s3_c;
-				pidx = tmp;
+				pidx = i;
 			}
-			tmp++;
 		}
 
 		if (pidx >= 0)
@@ -299,6 +305,14 @@ namespace dubins
 
 			// Construct Dubins curve
 			set_DBNcurve(curve, start, s1, s2, s3, ksigns[pidx][0] * kmax, ksigns[pidx][1] * kmax, ksigns[pidx][2] * kmax);
+			
+			// Check correctess of solution
+			if (!check(s1, ksigns[pidx][0] * sc_kmax,
+						s2, ksigns[pidx][1] * sc_kmax,
+						s3, ksigns[pidx][2] * sc_kmax,
+						sc_th0, sc_thf))
+				throw std::logic_error("DUBINS - INCORRECT COMPUTED SOLUTION");
+				
 		}
 	}
 

@@ -39,7 +39,7 @@ namespace dubins
         DubinsArc arc_3;
     };
 
-    bool control(float const &s1, float const &k0, float const &s2, float const &k1, float const &s3, float const &k2, Pose2D start, Pose2D end);
+    bool check(float const &s1, float const &k0, float const &s2, float const &k1, float const &s3, float const &k2, float const &th0, float const &thf);
     // -------- Scaling the functions ------------------------------------------
     void scaleToStandard(Pose2D start, Pose2D end, float kmax, float &sc_th_init, float &sc_th_fin, float &sc_kmax, float &lambda);
 
@@ -59,9 +59,9 @@ namespace dubins
 
     void LRL(float sc_th_init, float sc_th_fin, float sc_kmax, bool &ctrl, float &sc_s1, float &sc_s2, float &sc_s3);
 
-    void set_DBNarc(DubinsArc &ptr, Pose2D start, float k, float s);
+    void set_DBNarc(DubinsArc &ptr, const Pose2D &start, float k, float s);
 
-    void set_DBNcurve(DubinsCurve &curve_ptr, Pose2D start, float s1, float s2, float s3, float k0, float k1, float k2);
+    void set_DBNcurve(DubinsCurve &curve, const Pose2D &start, float s1, float s2, float s3, float k0, float k1, float k2);
 
     // ----- Find the shortest path ---------------------------------------------
     void DBN_shortest(DubinsCurve &curve, Pose2D start, Pose2D end, float const &kmax);

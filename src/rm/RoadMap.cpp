@@ -153,6 +153,7 @@ namespace rm
     }
 
     float RoadMap::Node::Orientation::getTheta() const { return _theta; }
-
     RoadMap::Node &RoadMap::Node::Orientation::getNode() const { return *_parent; }
+    size_t RoadMap::Node::Orientation::getConnectionCount() const { return _connections.size(); }
+    rm::RoadMap::DubinsConnection &RoadMap::Node::Orientation::getConnection(size_t index) { return _connections[index]; };
 }

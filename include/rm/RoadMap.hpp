@@ -30,6 +30,8 @@ namespace rm
 
                 float getTheta() const;
                 Node &getNode() const;
+                size_t getConnectionCount() const;
+                rm::RoadMap::DubinsConnection &getConnection(size_t index);
             };
 
         private:

@@ -59,12 +59,12 @@ namespace dubins
 
     void LRL(float sc_th_init, float sc_th_fin, float sc_kmax, bool &ctrl, float &sc_s1, float &sc_s2, float &sc_s3);
 
-    void set_DBNarc(DubinsArc &ptr, const Pose2D &start, float k, float s);
+    void setDubinsArc(DubinsArc &ptr, const Pose2D &start, float k, float s);
 
-    void set_DBNcurve(DubinsCurve &curve, const Pose2D &start, float s1, float s2, float s3, float k0, float k1, float k2);
+    void setDubinsCurve(DubinsCurve &curve, const Pose2D &start, float s1, float s2, float s3, float k0, float k1, float k2);
 
     // ----- Find the shortest path ---------------------------------------------
-    bool DBN_shortest(DubinsCurve &curve, Pose2D start, Pose2D end, float const &kmax, const vector<Polygon> &obstacles = vector<Polygon>(), const Polygon &borders = Polygon());
+    bool findShortestPath(DubinsCurve &curve, Pose2D start, Pose2D end, float const &kmax, const vector<Polygon> &obstacles = vector<Polygon>(), const Polygon &borders = Polygon());
 
     // ----- Discretization of the arc ------------------------------------------
     void discretize_arc(DubinsArc &full_arc, float &s, int &npts, vector<Path> &path);

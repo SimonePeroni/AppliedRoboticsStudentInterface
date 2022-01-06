@@ -228,7 +228,7 @@ namespace dubins
 	}
 
 	// ----- Function to implement a structure representing a Dubins arc for both straight and circular ----------------------------------------------------
-	void set_DBNarc(DubinsArc &ptr, const Pose2D &start, float k, float s)
+	void setDubinsArc(DubinsArc &ptr, const Pose2D &start, float k, float s)
 	{
 
 		ptr.start.x = start.x;
@@ -242,17 +242,17 @@ namespace dubins
 	}
 
 	// ----- Function to implement a structure representing 3 arcs which make up the Dubins curve ------------------------------------------
-	void set_DBNcurve(DubinsCurve &curve, const Pose2D &start, float s1, float s2, float s3, float k0, float k1, float k2)
+	void setDubinsCurve(DubinsCurve &curve, const Pose2D &start, float s1, float s2, float s3, float k0, float k1, float k2)
 	{
 
-		set_DBNarc(curve.arc_1, start, k0, s1);
-		set_DBNarc(curve.arc_2, curve.arc_1.end, k1, s2);
-		set_DBNarc(curve.arc_3, curve.arc_2.end, k2, s3);
+		setDubinsArc(curve.arc_1, start, k0, s1);
+		setDubinsArc(curve.arc_2, curve.arc_1.end, k1, s2);
+		setDubinsArc(curve.arc_3, curve.arc_2.end, k2, s3);
 		curve.L = curve.arc_1.s + curve.arc_2.s + curve.arc_3.s;
 	}
 
 	// ----- Function to find the shortest path ---------------------------------------------------------------------------------------------
-	bool DBN_shortest(DubinsCurve &curve, Pose2D start, Pose2D end, float const &kmax, const vector<Polygon> &obstacles, const Polygon &borders)
+	bool findShortestPath(DubinsCurve &curve, Pose2D start, Pose2D end, float const &kmax, const vector<Polygon> &obstacles, const Polygon &borders)
 	{
 		float sc_th0, sc_thf, sc_kmax;
 		float lambda;
@@ -294,7 +294,7 @@ namespace dubins
 			{
 				DubinsCurve current;
 				scaleFromStandard(lambda, sc_s1_c, sc_s2_c, sc_s3_c, s1, s2, s3);
-				set_DBNcurve(current, start, s1, s2, s3, ksigns[i][0] * kmax, ksigns[i][1] * kmax, ksigns[i][2] * kmax);
+				setDubinsCurve(current, start, s1, s2, s3, ksigns[i][0] * kmax, ksigns[i][1] * kmax, ksigns[i][2] * kmax);
 				bool colliding = false;
 				if (!obstacles.empty())
 				{

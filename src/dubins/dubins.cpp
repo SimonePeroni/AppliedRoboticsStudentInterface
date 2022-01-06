@@ -9,6 +9,7 @@
 
 #include "dubins/dubins.hpp"
 #include "utils.hpp"
+#include "rm/geometry.hpp"
 
 using namespace std;
 
@@ -251,7 +252,7 @@ namespace dubins
 	}
 
 	// ----- Function to find the shortest path ---------------------------------------------------------------------------------------------
-	void DBN_shortest(DubinsCurve &curve, Pose2D start, Pose2D end, float const &kmax)
+	bool DBN_shortest(DubinsCurve &curve, Pose2D start, Pose2D end, float const &kmax, const vector<Polygon> &obstacles, const Polygon &borders)
 	{
 		float sc_th0, sc_thf, sc_kmax;
 		float lambda;
@@ -268,12 +269,12 @@ namespace dubins
 
 		maneuver primitives[6] = {LSL_ptr, RSR_ptr, LSR_ptr, RSL_ptr, RLR_ptr, LRL_ptr};
 		int ksigns[6][3] = {
-				{1, 0, 1},	 //LSL
-				{-1, 0, -1}, //RSR
-				{1, 0, -1},  //LSR
-				{-1, 0, 1},  //RSL
-				{-1, 1, -1}, //RLR
-				{1, -1, 1}}; //LRL
+			{1, 0, 1},	 //LSL
+			{-1, 0, -1}, //RSR
+			{1, 0, -1},	 //LSR
+			{-1, 0, 1},	 //RSL
+			{-1, 1, -1}, //RLR
+			{1, -1, 1}}; //LRL
 
 		int pidx = -1;
 		double L = numeric_limits<double>::infinity(); // Infinite value
@@ -282,38 +283,61 @@ namespace dubins
 		float sc_s1, sc_s2, sc_s3;
 		float sc_s1_c, sc_s2_c, sc_s3_c;
 		int Lcur;
+		DubinsCurve best;
 
 		for (size_t i = 0; i < 6; i++)
 		{
 			primitives[i](sc_th0, sc_thf, sc_kmax, ctrl, sc_s1_c, sc_s2_c, sc_s3_c);
 
 			Lcur = sc_s1_c + sc_s2_c + sc_s3_c;
-			if (ctrl and Lcur < L)
+			if (ctrl && Lcur < L)
 			{
-				L = Lcur;
-				sc_s1 = sc_s1_c;
-				sc_s2 = sc_s2_c;
-				sc_s3 = sc_s3_c;
-				pidx = i;
+				DubinsCurve current;
+				scaleFromStandard(lambda, sc_s1_c, sc_s2_c, sc_s3_c, s1, s2, s3);
+				set_DBNcurve(current, start, s1, s2, s3, ksigns[i][0] * kmax, ksigns[i][1] * kmax, ksigns[i][2] * kmax);
+				bool colliding = false;
+				if (!obstacles.empty())
+				{
+					for (auto &obst : obstacles)
+					{
+						if (rm::collisionCheck(current, obst))
+						{
+							colliding = true;
+							break;
+						}
+					}
+				}
+				if (!colliding && !borders.empty())
+				{
+					if (rm::collisionCheck(current, borders))
+						colliding = true;
+				}
+				if (!colliding)
+				{
+					L = Lcur;
+					sc_s1 = sc_s1_c;
+					sc_s2 = sc_s2_c;
+					sc_s3 = sc_s3_c;
+					best = current;
+					pidx = i;
+				}
 			}
 		}
 
 		if (pidx >= 0)
-		{ // ----------------  here we transform problem to standard form & we construct the Dubins curve  ----------------------------------------
+		{ 
+			curve = best;
 
-			scaleFromStandard(lambda, sc_s1, sc_s2, sc_s3, s1, s2, s3);
-
-			// Construct Dubins curve
-			set_DBNcurve(curve, start, s1, s2, s3, ksigns[pidx][0] * kmax, ksigns[pidx][1] * kmax, ksigns[pidx][2] * kmax);
-			
 			// Check correctess of solution
-			if (!check(s1, ksigns[pidx][0] * sc_kmax,
-						s2, ksigns[pidx][1] * sc_kmax,
-						s3, ksigns[pidx][2] * sc_kmax,
-						sc_th0, sc_thf))
+			if (!check(sc_s1, ksigns[pidx][0] * sc_kmax,
+					   sc_s2, ksigns[pidx][1] * sc_kmax,
+					   sc_s3, ksigns[pidx][2] * sc_kmax,
+					   sc_th0, sc_thf))
 				throw std::logic_error("DUBINS - INCORRECT COMPUTED SOLUTION");
-				
+
+			return true;
 		}
+		return false;
 	}
 
 	//----------------- This last discretization step is needed in order to create smaller arcs that the robots will follow ----------------------

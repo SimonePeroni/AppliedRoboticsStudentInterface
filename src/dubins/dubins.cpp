@@ -365,15 +365,15 @@ namespace dubins
 		// skip degenerate arcs
 		if (arc.s > 0.0f)
 		{
-			int n_points = floor((arc.s - offset) / step);
-			for (size_t i = 0; i <= n_points; i++)
+			int n_points = floor((arc.s - offset) / step) + 1;
+			for (size_t i = 0; i < n_points; i++)
 			{
 				float s = offset + step * i;
 				Pose2D current = poseOnArc(s, arc.start, arc.k);
 				out.push_back(Pose(s_end + step - offset + s, current.x, current.y, current.theta, arc.k));
 			}
-			offset = step * (n_points + 1) + offset - arc.s;
-			s_end += step * (n_points + 1);
+			offset = step * n_points + offset - arc.s;
+			s_end += step * n_points;
 		}
 		return out;
 	}

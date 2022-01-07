@@ -91,8 +91,8 @@ namespace rm
         // parameterized equation
         float dx21 = s.p1.x - s.p0.x;
         float dy21 = s.p1.y - s.p0.y;
-        float dx1c = s.p1.x - center.x;
-        float dy1c = s.p1.y - center.y;
+        float dx1c = s.p0.x - center.x;
+        float dy1c = s.p0.y - center.y;
         float a = dx21 * dx21 + dy21 * dy21;
         float b = dx21 * dx1c + dy21 * dy1c;
         float c = dx1c * dx1c + dy1c * dy1c - rho * rho;

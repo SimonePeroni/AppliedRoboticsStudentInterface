@@ -20,9 +20,9 @@ namespace nav
             std::vector<float>(
                 source.getNode().getPosesCount(),
                 INF));
-        std::vector<std::vector<rm::RoadMap::DubinsConnection *>> from(
+        std::vector<std::vector<rm::RoadMap::DubinsConnection const *>> from(
             roadmap.getNodeCount(),
-            std::vector<rm::RoadMap::DubinsConnection *>(
+            std::vector<rm::RoadMap::DubinsConnection const *>(
                 source.getNode().getPosesCount(),
                 nullptr));
         std::set<dist_pose> set_dist_pose;
@@ -35,7 +35,7 @@ namespace nav
             dist_pose top = *set_dist_pose.begin();
             set_dist_pose.erase(set_dist_pose.begin());
 
-            auto current_source_pose = top.second;
+            auto &current_source_pose = top.second;
 
             for (size_t i = 0; i < current_source_pose.getConnectionCount(); i++)
             {
@@ -58,7 +58,7 @@ namespace nav
             }
 
             // Stop if goal was reached
-            if (top.second == goal)
+            if (&top.second == &goal)
                 break;
         }
 
@@ -69,7 +69,7 @@ namespace nav
             throw std::logic_error("DIJKSTRA - NO EXISTING PATH CONNECTING SOURCE AND GOAL");
         while (path.front()->from != &source)
         {
-            path.push_front(from[path.front()->from->getNode()][*path.front()->from]);
+            path.push_front(from[path.front()->from->getNode().getID()][path.front()->from->getID()]);
         }
         return path;
     }

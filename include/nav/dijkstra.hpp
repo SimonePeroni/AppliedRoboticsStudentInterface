@@ -6,7 +6,7 @@
 
 namespace nav
 {
-    typedef std::deque<rm::RoadMap::DubinsConnection *> navList;
+    typedef std::deque<rm::RoadMap::DubinsConnection const *> navList;
 
     navList dijkstraShortestPath(const rm::RoadMap::Node::Orientation &source,
                                  const rm::RoadMap::Node::Orientation &goal,

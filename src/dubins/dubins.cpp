@@ -377,6 +377,16 @@ namespace dubins
 
 	std::vector<Pose> discretizeCurve(const DubinsCurve &curve, float &s_end, float step, float &offset)
 	{
+		std::vector<Pose> out;
 
+		auto path1 = discretizeArc(curve.arc_1, s_end, step, offset);
+		auto path2 = discretizeArc(curve.arc_2, s_end, step, offset);
+		auto path3 = discretizeArc(curve.arc_3, s_end, step, offset);
+
+		out = path1;
+		out.insert(out.end(), path2.begin(), path2.end());
+		out.insert(out.end(), path3.begin(), path3.end());
+
+		return out;
 	}
 } // dubins

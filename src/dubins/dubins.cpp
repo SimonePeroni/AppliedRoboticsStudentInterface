@@ -362,16 +362,19 @@ namespace dubins
 	{
 		std::vector<Pose> out;
 
-		int n_points = floor((arc.s - offset) / step);
-		offset = step * (n_points + 1) + offset - arc.s;
-		for (size_t i = 0; i <= n_points; i++)
+		// skip degenerate arcs
+		if (arc.s > 0.0f)
 		{
-			float s = offset + step * i;
-			Pose2D current = poseOnArc(s, arc.start, arc.k);
-			out.push_back(Pose(s_end + step - offset + s, current.x, current.y, current.theta, arc.k));
+			int n_points = floor((arc.s - offset) / step);
+			for (size_t i = 0; i <= n_points; i++)
+			{
+				float s = offset + step * i;
+				Pose2D current = poseOnArc(s, arc.start, arc.k);
+				out.push_back(Pose(s_end + step - offset + s, current.x, current.y, current.theta, arc.k));
+			}
+			offset = step * (n_points + 1) + offset - arc.s;
+			s_end += step * (n_points + 1);
 		}
-
-		s_end += step * (n_points + 1);
 		return out;
 	}
 

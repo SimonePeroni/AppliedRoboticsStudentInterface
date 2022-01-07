@@ -9,3 +9,7 @@ target_link_libraries(test_inflation student)
 # Test roadmap
 add_executable(test_roadmap testRoadMap.cpp)
 target_link_libraries(test_roadmap student)
+
+# Test Dijkstra
+add_executable(test_dijkstra testDijkstra.cpp)
+target_link_libraries(test_dijkstra student)

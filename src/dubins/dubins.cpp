@@ -44,7 +44,8 @@ namespace dubins
 
 	// --------------- We need this function to normalize the angle in the range -180 to 180 deg --------------------------------
 
-	float normAngle(float ang) {
+	float normAngle(float ang)
+	{
 		float p = 2.0f * M_PI;
 		while (ang <= -M_PI)
 			ang = ang + p;
@@ -331,7 +332,7 @@ namespace dubins
 		}
 
 		if (pidx >= 0)
-		{ 
+		{
 			curve = best;
 
 			// Check correctess of solution
@@ -346,22 +347,36 @@ namespace dubins
 		return false;
 	}
 
+	Pose2D poseOnArc(float s, Pose2D p0, float k)
+	{
+		Pose2D out;
+		out.x = p0.x + s * sinc(.5f * k * s) * cos(p0.theta + .5f * k * s);
+		out.y = p0.y + s * sinc(.5f * k * s) * sin(p0.theta + .5f * k * s);
+		out.theta = mod2pi(p0.theta + k * s);
+		return out;
+	}
+
 	//----------------- This last discretization step is needed in order to create smaller arcs that the robots will follow ----------------------
 
-	void discretize_arc(DubinsArc &full_arc, float &s, int &npts, std::vector<Path> &path)
+	std::vector<Pose> discretizeArc(const DubinsArc &arc, float &s_end, float step, float &offset)
 	{
-		throw std::logic_error("DUBINS - ARC DISCRETIZATION NOT IMPLEMENTED");
-		/*
-		int tmp = 0;
-		while (tmp <= npts)
-		{
-			DubinsArc small_arc;
-			float s_local = full_arc.s / npts * tmp;
-			tmp++;
-			set_DBNarc(small_arc, full_arc.start, full_arc.k, s_local);
-			path.points.emplace_back(s_local, small_arc.end.x, small_arc.end.y, small_arc.end.theta, small_arc.k);
+		std::vector<Pose> out;
 
-			s = s + full_arc.s / npts;
-		}*/
+		int n_points = floor((arc.s - offset) / step);
+		offset = step * (n_points + 1) + offset - arc.s;
+		for (size_t i = 0; i <= n_points; i++)
+		{
+			float s = offset + step * i;
+			Pose2D current = poseOnArc(s, arc.start, arc.k);
+			out.push_back(Pose(s_end + step - offset + s, current.x, current.y, current.theta, arc.k));
+		}
+
+		s_end += step * (n_points + 1);
+		return out;
+	}
+
+	std::vector<Pose> discretizeCurve(const DubinsCurve &curve, float &s_end, float step, float &offset)
+	{
+
 	}
 } // dubins

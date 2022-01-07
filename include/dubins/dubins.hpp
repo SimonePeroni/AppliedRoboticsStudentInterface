@@ -65,7 +65,10 @@ namespace dubins
 
     // ----- Find the shortest path ---------------------------------------------
     bool findShortestPath(DubinsCurve &curve, Pose2D start, Pose2D end, float const &kmax, const std::vector<Polygon> &obstacles = std::vector<Polygon>(), const Polygon &borders = Polygon());
-
+	
+    Pose2D poseOnArc(float s, Pose2D p0, float k);
     // ----- Discretization of the arc ------------------------------------------
-    void discretize_arc(DubinsArc &full_arc, float &s, int &npts, std::vector<Path> &path);
+    std::vector<Pose> discretizeArc(const DubinsArc &arc, float &s_end, float step, float &offset);
+
+    std::vector<Pose> discretizeCurve(const DubinsCurve &curve, float &s_end, float step, float &offset);
 } // dubins

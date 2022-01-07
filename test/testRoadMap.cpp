@@ -49,7 +49,6 @@ int main()
     rm::RoadMap rm = rm::maxClearance(infObstacles, infBorders);
 
     std::cout << "number of nodes in rm: " << rm.getNodeCount() << std::endl;
-    std::cout << "number of global nodes: " << rm::RoadMap::Node::getTotalNodeCount() << std::endl;
 /*     for (size_t i = 0; i < rm.getNodeCount(); i++)
     {
         auto node = rm.getNodeAt(i);
@@ -59,13 +58,13 @@ int main()
     } */
     for (size_t i = 0; i < rm.getNodeCount(); i++)
     {
-        auto node = rm.getNodeAt(i);
+        auto node = rm.getNode(i);
         std::cout << "plot(" << node.getX() << ", " << node.getY() << ", '*')" << std::endl;
     }
     auto tic = std::chrono::high_resolution_clock::now();
-    auto n_connections = rm.build(8, 100, infObstacles, infBorders);
+    auto n_connections = rm.build(8, 10.0f, infObstacles, infBorders);
     auto toc = std::chrono::high_resolution_clock::now();
 
     std::chrono::duration<float, std::milli> duration = toc - tic;
-    std::cout << "Generated" << n_connections << " dubins connections in " << duration.count() << " milliseconds." << std::endl;
+    std::cout << "Generated " << n_connections << " dubins connections in " << duration.count() << " milliseconds." << std::endl;
 }

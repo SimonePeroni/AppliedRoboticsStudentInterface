@@ -40,7 +40,7 @@ int main()
     Polygon infBorders = rm::inflate(std::vector<Polygon>{borders}, -offset).back();
 
     rm::RoadMap rm = rm::maxClearance(infObstacles, infBorders);
-    rm.build(8, 10.0f, infObstacles, infBorders);
+    rm.build(8, 100.0f, infObstacles, infBorders);
 
     auto &source = rm.getNode(0).getPose(0);
     auto &goal = rm.getNode(rm.getNodeCount() - 1).getPose(0);
@@ -56,11 +56,19 @@ int main()
     std::ofstream matfile;
     matfile.open("plot_dijkstra_path.m");
     matfile.clear();
+    float s_end = 0.0f;
+    float d_offset = 0.0f;
+    float step = 0.001f;
     for (const auto &connection : path)
     {
-        auto &from = connection->from->getNode();
+        /*auto &from = connection->from->getNode();
         auto &to = connection->to->getNode();
-        matfile << "plot([" << from.getX() << ", " << to.getX() << "], [" << from.getY() << ", " << to.getY() << "], 'r-')" << std::endl;
+        matfile << "plot([" << from.getX() << ", " << to.getX() << "], [" << from.getY() << ", " << to.getY() << "], 'r-')" << std::endl;*/
+        auto discr_path = dubins::discretizeCurve(connection->path, s_end, step, d_offset);
+        for (const auto &pose : discr_path)
+        {
+            matfile << "plot(" << pose.x << ", " << pose.y << ", 'r*')" << std::endl;
+        }
     }
     matfile.close();
 }

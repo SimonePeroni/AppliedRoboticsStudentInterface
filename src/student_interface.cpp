@@ -4,6 +4,18 @@
 #include <stdexcept>
 #include <sstream>
 
+
+#include <iostream>
+#include <vector>
+#include <chrono>
+
+#include "rm/RoadMap.hpp"
+#include "rm/maxClearance.hpp"
+#include "rm/inflate.hpp"
+#include "rm/geometry.hpp"
+
+
+
 namespace student
 {
 
@@ -64,6 +76,32 @@ namespace student
     // TODO: Plan evader movements - random switch between gates at each node
     // TODO: Plan pursuer movements according to evader state (synchronously! Can not use information about future states of the evader, only know which node it is heading to next)
   
+bool orientation = true; 
+float offset = 2.0; // ---- change value accordingly 
+bool debug_print = true; 
+
+
+
+std::vector<Polygon> infObstacles = rm::inflate(obstacles, offset, orientation);
+
+// --- RoadMap --- // --------------------------- TODO: include the gates list in the roadmap 
+rm::RoadMap rm = rm::maxClearance(infObstacles, borders);
+
+// ------------------------ // show the outcome // ------------------ // 
+if(debug_print)
+std::cout << "number of nodes in rm: " << rm.getNodeCount() << std::endl;
+
+// ---------------------- Dubins connections ------------------------ // 
+auto tic = std::chrono::high_resolution_clock::now();
+auto n_connections = rm.build(8, 10.0f, infObstacles, infBorders);
+auto toc = std::chrono::high_resolution_clock::now();
+
+std::chrono::duration<float, std::milli> duration = toc - tic;
+
+if(debug_print)
+std::cout << "Generated " << n_connections << " dubins connections in " << duration.count() << " milliseconds." << std::endl;
+
+    
   return true;
   }
 }

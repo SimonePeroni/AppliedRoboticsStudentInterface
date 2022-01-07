@@ -1,21 +1,30 @@
 #include <limits>
+#include <set>
+#include <utility>
+#include <vector>
+#include <stdexcept>
 
 #include "nav/dijkstra.hpp"
 
 namespace nav
 {
     navList dijkstraShortestPath(const rm::RoadMap::Node::Orientation &source,
-                                 const rm::RoadMap::Node::Orientation &goal)
+                                 const rm::RoadMap::Node::Orientation &goal,
+                                 const rm::RoadMap &roadmap)
     {
         typedef std::pair<float, const rm::RoadMap::Node::Orientation &> dist_pose;
 
-        rm::RoadMap &rm = source.getNode().getRoadMap();
         float INF = std::numeric_limits<float>::infinity();
         std::vector<std::vector<float>> dist(
-            rm.getNodeCount(),
+            roadmap.getNodeCount(),
             std::vector<float>(
                 source.getNode().getPosesCount(),
                 INF));
+        std::vector<std::vector<rm::RoadMap::DubinsConnection *>> from(
+            roadmap.getNodeCount(),
+            std::vector<rm::RoadMap::DubinsConnection *>(
+                source.getNode().getPosesCount(),
+                nullptr));
         std::set<dist_pose> set_dist_pose;
 
         dist[source.getNode()][source] = 0.0f;
@@ -30,22 +39,38 @@ namespace nav
 
             for (size_t i = 0; i < current_source_pose.getConnectionCount(); i++)
             {
-                auto connection = current_source_pose.getConnection(i);
+                auto &connection = current_source_pose.getConnection(i);
                 auto &adj_pose = *connection.to;
                 float dist_from_adjpose = connection.path.L;
 
                 // Edge relaxation
                 if (dist[adj_pose.getNode()][adj_pose] > dist_from_adjpose + dist[current_source_pose.getNode()][current_source_pose])
                 {
+                    // Remove from set to avoid duplicates
                     if (dist[adj_pose.getNode()][adj_pose] != INF)
                         set_dist_pose.erase(set_dist_pose.find(dist_pose(dist[adj_pose.getNode()][adj_pose], adj_pose)));
+                    // Update distance and shortest connection
                     dist[adj_pose.getNode()][adj_pose] = dist_from_adjpose + dist[current_source_pose.getNode()][current_source_pose];
+                    from[adj_pose.getNode()][adj_pose] = &connection;
+                    // Add node to set
                     set_dist_pose.insert(dist_pose(dist[adj_pose.getNode()][adj_pose], adj_pose));
                 }
             }
 
+            // Stop if goal was reached
             if (top.second == goal)
                 break;
         }
+
+        // Reconstruct path to goal backwards
+        navList path;
+        path.push_front(from[goal.getNode()][goal]);
+        if (path.front() == nullptr)
+            throw std::logic_error("DIJKSTRA - NO EXISTING PATH CONNECTING SOURCE AND GOAL");
+        while (path.front()->from != &source)
+        {
+            path.push_front(from[path.front()->from->getNode()][*path.front()->from]);
+        }
+        return path;
     }
 }

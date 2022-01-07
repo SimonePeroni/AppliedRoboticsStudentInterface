@@ -53,18 +53,19 @@ namespace student
     throw std::logic_error("STUDENT FUNCTION - FIND ROBOT - NOT IMPLEMENTED");
   }
 
-  bool planPath(const Polygon &borders, const std::vector<Polygon> &obstacle_list, const std::vector<Polygon> &gate_list, const std::vector<float> x, const std::vector<float> y, const std::vector<float> theta, std::vector<Path> &path, const std::string &config_folder)
+  bool planPath(const Polygon &borders, const std::vector<Polygon> &obstacle_list, const std::vector<Polygon> &gate_list,
+                const std::vector<float> x, const std::vector<float> y, const std::vector<float> theta,
+                std::vector<Path> &path, const std::string &config_folder)
   {
-    //throw std::logic_error("STUDENT FUNCTION - PLAN PATH - NOT IMPLEMENTED");
+    throw std::logic_error("STUDENT FUNCTION - PLAN PATH - NOT IMPLEMENTED");
 
-    // TODO: Inflate obstacles. -- Implemented 
-    // TODO: Construct maximum clearance graph. -- Implemented 
+    // TODO: Inflate obstacles. -- Implemented
+    // TODO: Construct maximum clearance graph. -- Implemented
     // TODO: Build multilayer roadmap with finite set of orientations per node - connect only feasible dubins and save length of each edge.
-    // TODO: Implement optimal path finding algorithm. -- Dijkstra 
+    // TODO: Implement optimal path finding algorithm. -- Dijkstra
     // TODO: Plan evader movements - random switch between gates at each node
     // TODO: Plan pursuer movements according to evader state (synchronously! Can not use information about future states of the evader, only know which node it is heading to next)
-  
-  return true;
+
+    return true;
   }
 }
-

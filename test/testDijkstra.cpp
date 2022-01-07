@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <chrono>
+#include <fstream>
 
 #include "nav/dijkstra.hpp"
 #include "rm/RoadMap.hpp"
@@ -50,4 +51,16 @@ int main()
 
     std::chrono::duration<float, std::milli> duration = toc - tic;
     std::cout << "Path found in " << duration.count() << " milliseconds." << std::endl;
+    std::cout << "Traversing " << path.size() - 1 << " intermediate nodes." << std::endl;
+
+    std::ofstream matfile;
+    matfile.open("plot_dijkstra_path.m");
+    matfile.clear();
+    for (const auto &connection : path)
+    {
+        auto &from = connection->from->getNode();
+        auto &to = connection->to->getNode();
+        matfile << "plot([" << from.getX() << ", " << to.getX() << "], [" << from.getY() << ", " << to.getY() << "], 'r-')" << std::endl;
+    }
+    matfile.close();
 }

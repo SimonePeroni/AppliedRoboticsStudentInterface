@@ -74,7 +74,7 @@ namespace student
     // TODO: Implement optimal path finding algorithm. -- Dijkstra
     // TODO: Plan evader movements - random switch between gates at each node
     // TODO: Plan pursuer movements according to evader state (synchronously! Can not use information about future states of the evader, only know which node it is heading to next)
-
+    /*
     bool orientation = true;
     float offset = 2.0; // ---- change value accordingly
     bool debug_print = true;
@@ -99,5 +99,6 @@ namespace student
       std::cout << "Generated " << n_connections << " dubins connections in " << duration.count() << " milliseconds." << std::endl;
 
     return true;
+    */
   }
 }

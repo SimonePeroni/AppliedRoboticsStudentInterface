@@ -68,7 +68,7 @@ namespace dubins
 	
     Pose2D poseOnArc(float s, Pose2D p0, float k);
     // ----- Discretization of the arc ------------------------------------------
-    std::vector<Pose> discretizeArc(const DubinsArc &arc, float &s_end, float step, float &offset);
+    void discretizeArc(const DubinsArc &arc, float step, float &offset, std::vector<Pose> &path);
 
-    std::vector<Pose> discretizeCurve(const DubinsCurve &curve, float &s_end, float step, float &offset);
+    void discretizeCurve(const DubinsCurve &curve, float step, float &offset, std::vector<Pose> &path);
 } // dubins

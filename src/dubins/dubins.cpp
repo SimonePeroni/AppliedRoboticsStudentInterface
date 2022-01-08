@@ -358,38 +358,27 @@ namespace dubins
 
 	//----------------- This last discretization step is needed in order to create smaller arcs that the robots will follow ----------------------
 
-	std::vector<Pose> discretizeArc(const DubinsArc &arc, float &s_end, float step, float &offset)
+	void discretizeArc(const DubinsArc &arc, float step, float &offset, std::vector<Pose> &path)
 	{
-		std::vector<Pose> out;
-
 		// skip degenerate arcs
 		if (arc.s > 0.0f)
 		{
+			float s_end = path.empty() ? 0.0f : path.back().s;
 			int n_points = floor((arc.s - offset) / step) + 1;
 			for (size_t i = 0; i < n_points; i++)
 			{
 				float s = offset + step * i;
 				Pose2D current = poseOnArc(s, arc.start, arc.k);
-				out.push_back(Pose(s_end + step - offset + s, current.x, current.y, current.theta, arc.k));
+				path.push_back(Pose(s_end + step - offset + s, current.x, current.y, current.theta, arc.k));
 			}
 			offset = step * n_points + offset - arc.s;
-			s_end += step * n_points;
 		}
-		return out;
 	}
 
-	std::vector<Pose> discretizeCurve(const DubinsCurve &curve, float &s_end, float step, float &offset)
+	void discretizeCurve(const DubinsCurve &curve, float step, float &offset, std::vector<Pose> &path)
 	{
-		std::vector<Pose> out;
-
-		auto path1 = discretizeArc(curve.arc_1, s_end, step, offset);
-		auto path2 = discretizeArc(curve.arc_2, s_end, step, offset);
-		auto path3 = discretizeArc(curve.arc_3, s_end, step, offset);
-
-		out = path1;
-		out.insert(out.end(), path2.begin(), path2.end());
-		out.insert(out.end(), path3.begin(), path3.end());
-
-		return out;
+		discretizeArc(curve.arc_1, step, offset, path);
+		discretizeArc(curve.arc_2, step, offset, path);
+		discretizeArc(curve.arc_3, step, offset, path);
 	}
 } // dubins

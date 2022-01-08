@@ -56,19 +56,19 @@ int main()
     std::ofstream matfile;
     matfile.open("plot_dijkstra_path.m");
     matfile.clear();
-    float s_end = 0.0f;
     float d_offset = 0.0f;
-    float step = 0.001f;
+    float step = 0.01f;
+    std::vector<Pose> discr_path;
     for (const auto &connection : path)
     {
         /*auto &from = connection->from->getNode();
         auto &to = connection->to->getNode();
         matfile << "plot([" << from.getX() << ", " << to.getX() << "], [" << from.getY() << ", " << to.getY() << "], 'r-')" << std::endl;*/
-        auto discr_path = dubins::discretizeCurve(connection->path, s_end, step, d_offset);
-        for (const auto &pose : discr_path)
-        {
-            matfile << "plot(" << pose.x << ", " << pose.y << ", 'r*')" << std::endl;
-        }
+        dubins::discretizeCurve(connection->path, step, d_offset, discr_path);
+    }
+    for (const auto &pose : discr_path)
+    {
+        matfile << "plot(" << pose.x << ", " << pose.y << ", 'r*')" << std::endl;
     }
     matfile.close();
 }

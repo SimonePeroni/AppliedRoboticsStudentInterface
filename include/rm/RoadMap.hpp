@@ -312,7 +312,13 @@ namespace rm
         void connect(node_id fromID, node_id toID);
 
         /**
-         * @brief Build the RoadMap.
+         * @brief Build the roadmap.
+         * 
+         * This process starts with the creation of a given number of poses for each positional node, with evenly spaced angles.
+         * Following the base directed graph of the roadmap, for each couple of connected nodes the algorithm tries to generate
+         * Dubins paths that connect each pose of the starting node to each pose of the destination node. In this phase, it is
+         * checked whether the path leads to collision with obtacles or with the arena borders. The feasible paths are added to
+         * the navigation graph, which can be explored by checking the connections of each pose.
          * 
          * @param orientationsPerNode   Number of poses to be created on each positional node
          * @param kmax                  Maximum curvature of Dubins paths

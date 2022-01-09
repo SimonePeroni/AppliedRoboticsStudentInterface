@@ -48,7 +48,7 @@ int main()
 
     rm::RoadMap rm = rm::maxClearance(infObstacles, infBorders);
 
-    size_t bypass_edges = rm.bypass(0.1f);
+    size_t bypass_edges = rm.bypass(0.1f, true);
 
     std::cout << "number of nodes in rm: " << rm.getNodeCount() << std::endl;
     std::cout << "number of bypass edges: " << bypass_edges << std::endl;

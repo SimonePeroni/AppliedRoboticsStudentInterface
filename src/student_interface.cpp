@@ -75,12 +75,13 @@ namespace student
 		// TODO: Plan evader movements - random switch between gates at each node
 		// TODO: Plan pursuer movements according to evader state (synchronously! Can not use information about future states of the evader, only know which node it is heading to next)
 
-		float robot_size = 0.1f;	   // How can we get this from the simulator??
-		int n_poses = 8;			   // Number of poses per node
-		float kmax = 30.0f;			   // Maximum curvature of Dubins paths
-		float bypass_min = 1 / kmax;   // Minimum length of edges for making bypass connections
-		int k = 3;					   // Robot free movement parameter
-		float step = M_PI / 12 / kmax; // Discretization step
+		float robot_size = 0.2f;				// How can we get this from the simulator??
+		int n_poses = 8;						// Number of poses per node
+		float kmax = 3.0 / robot_size;			// Maximum curvature of Dubins paths
+		float bypass_min = 1 / kmax;			// Minimum length of edges for making bypass connections
+		float bypass_min_keep = bypass_min / 2; // Minimum length of edges for them to be kept in the final graph
+		int k = 5;								// Robot free movement parameter
+		float step = M_PI / 16 / kmax;			// Discretization step
 
 		// Inflate obstacles and borders
 		std::cout << "Inflating obstacles and borders..." << std::endl;
@@ -93,7 +94,6 @@ namespace student
 		std::chrono::duration<float, std::milli> duration = toc - tic;
 		std::cout << " DONE [" << duration.count() << " ms]" << std::endl;
 
-
 		// Setup RoadMap by maximum clearance graph
 		std::cout << "Setting up maximum clearance graph..." << std::endl;
 		tic = std::chrono::high_resolution_clock::now();
@@ -104,17 +104,24 @@ namespace student
 		duration = toc - tic;
 		std::cout << " DONE [" << duration.count() << " ms]" << std::endl;
 
-
 		// Create bypass edges
-		std::cout << "Creating bypass edges..." << std::endl;
+		std::cout << "Creating bypass edges...[1/2]" << std::endl;
 		tic = std::chrono::high_resolution_clock::now();
 
-		rm.bypass(bypass_min);
+		rm.bypass(bypass_min_keep, true);
 
 		toc = std::chrono::high_resolution_clock::now();
 		duration = toc - tic;
 		std::cout << " DONE [" << duration.count() << " ms]" << std::endl;
 
+		std::cout << "Creating bypass edges...[2/2]" << std::endl;
+		tic = std::chrono::high_resolution_clock::now();
+
+		rm.bypass(bypass_min, false);
+
+		toc = std::chrono::high_resolution_clock::now();
+		duration = toc - tic;
+		std::cout << " DONE [" << duration.count() << " ms]" << std::endl;
 
 		// Build RoadMap
 		std::cout << "Building roadmap..." << std::endl;
@@ -126,7 +133,6 @@ namespace student
 		duration = toc - tic;
 		std::cout << " DONE [" << duration.count() << " ms]" << std::endl;
 
-
 		// Add initial position
 		std::cout << "Adding start pose..." << std::endl;
 		tic = std::chrono::high_resolution_clock::now();
@@ -136,7 +142,6 @@ namespace student
 		toc = std::chrono::high_resolution_clock::now();
 		duration = toc - tic;
 		std::cout << " DONE [" << duration.count() << " ms]" << std::endl;
-
 
 		// Add gate position
 		std::cout << "Adding goal pose..." << std::endl;
@@ -151,12 +156,11 @@ namespace student
 		}
 		gate_x /= gate_list[0].size();
 		gate_y /= gate_list[0].size();
-		auto &goal = rm.addGoalPose(Point(gate_x, gate_y), 0.0f, k, kmax, infObstacles, borders);
+		auto &goal = rm.addGoalPose(Point(gate_x, gate_y), M_PI_2, k, kmax, infObstacles, borders);
 
 		toc = std::chrono::high_resolution_clock::now();
 		duration = toc - tic;
 		std::cout << " DONE [" << duration.count() << " ms]" << std::endl;
-
 
 		// Get shortest path
 		std::cout << "Running Dijkstra algorithm..." << std::endl;
@@ -167,7 +171,6 @@ namespace student
 		toc = std::chrono::high_resolution_clock::now();
 		duration = toc - tic;
 		std::cout << " DONE [" << duration.count() << " ms]" << std::endl;
-
 
 		// Discretize path
 		std::cout << "Discretizing path..." << std::endl;

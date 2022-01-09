@@ -125,7 +125,7 @@ namespace rm
         return pose;
     }
 
-    size_t RoadMap::bypass(float min_dist)
+    size_t RoadMap::bypass(float min_dist, bool remove_short)
     {
         size_t count = 0;
         size_t old_count = -1;
@@ -142,7 +142,8 @@ namespace rm
                     float dist = std::hypotf(node.getX() - connected.getX(), node.getY() - connected.getY());
                     if (dist < min_dist)
                     {
-                        to_disconnect.push_back(connected);
+                        if (remove_short)
+                            to_disconnect.push_back(connected);
                         for (size_t j = 0; j < connected.getConnectedCount(); j++)
                         {
                             Node &bypass = connected.getConnected(j);
@@ -151,9 +152,12 @@ namespace rm
                         }
                     }
                 }
-                for (node_id &to : to_disconnect)
+                if (remove_short)
                 {
-                    node.disconnect(to);
+                    for (node_id &to : to_disconnect)
+                    {
+                        node.disconnect(to);
+                    }
                 }
             }
         }

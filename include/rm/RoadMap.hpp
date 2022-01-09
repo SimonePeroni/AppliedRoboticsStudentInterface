@@ -349,9 +349,10 @@ namespace rm
         /**
          * @brief Create extra edges to make sure short edges can be skipped
          * 
-         * @param min_dist  Minimum edge distance
-         * @return          Number of new edges created in the base directed graph of the roadmap
+         * @param min_dist      Minimum edge length to skip bypassing
+         * @param remove_short  If true, edges shorter than min_dist are removed from the graph
+         * @return              Number of new edges created in the base directed graph of the roadmap
          */
-        size_t bypass(float min_dist);
+        size_t bypass(float min_dist, bool remove_short);
     }; // RoadMap
 }

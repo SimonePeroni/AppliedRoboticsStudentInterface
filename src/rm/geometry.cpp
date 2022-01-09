@@ -9,9 +9,9 @@ namespace rm
         float det = (s1.p1.x - s1.p0.x) * (s0.p0.y - s0.p1.y) - (s0.p0.x - s0.p1.x) * (s1.p1.y - s1.p0.y);
         if (det == 0)
             return false;
-        float t = (s1.p0.y - s1.p1.y) * (s0.p0.x - s1.p0.x) + (s1.p1.x - s1.p0.x) * (s0.p0.y - s1.p0.y);
-        float u = (s0.p0.y - s0.p1.y) * (s0.p0.x - s1.p0.x) + (s0.p1.x - s0.p0.x) * (s0.p0.y - s1.p0.y);
-        return t >= 0 && u >= 0 && t <= det && u <= det;
+        float t = ((s1.p0.y - s1.p1.y) * (s0.p0.x - s1.p0.x) + (s1.p1.x - s1.p0.x) * (s0.p0.y - s1.p0.y)) / det;
+        float u = ((s0.p0.y - s0.p1.y) * (s0.p0.x - s1.p0.x) + (s0.p1.x - s0.p0.x) * (s0.p0.y - s1.p0.y)) / det;
+        return t >= 0.0f && u >= 0.0f && t <= 1.0f && u <= 1.0f;
     }
 
     bool collisionCheck(const Polygon &p0, const Polygon &p1)
@@ -142,7 +142,10 @@ namespace rm
     {
         // if arc is straight line, handle it as a segment
         if (arc.k == 0.0f)
-            return collisionCheck(Segment(arc.start.x, arc.start.y, arc.end.x, arc.end.y), p);
+        {
+            Segment s(arc.start.x, arc.start.y, arc.end.x, arc.end.y);
+            return collisionCheck(s, p);
+        }
 
         // curvature radius
         float rho = 1.f / arc.k;

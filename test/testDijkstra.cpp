@@ -65,9 +65,6 @@ int main()
     std::vector<Pose> discr_path;
     for (const auto &connection : path)
     {
-        /*auto &from = connection->from->getNode();
-        auto &to = connection->to->getNode();
-        matfile << "plot([" << from.getX() << ", " << to.getX() << "], [" << from.getY() << ", " << to.getY() << "], 'r-')" << std::endl;*/
         dubins::discretizeCurve(connection->path, step, d_offset, discr_path);
     }
     for (const auto &pose : discr_path)

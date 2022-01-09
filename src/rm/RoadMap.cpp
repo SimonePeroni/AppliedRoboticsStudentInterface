@@ -1,6 +1,10 @@
 #include "rm/RoadMap.hpp"
 
 #include <cmath>
+#include <utility>
+#include <set>
+#include <limits>
+#include <stdexcept>
 
 namespace rm
 {
@@ -27,6 +31,99 @@ namespace rm
     size_t RoadMap::getNodeCount() const { return _nodes.size(); }
 
     RoadMap::Node &RoadMap::getNode(node_id id) { return _nodes[id]; }
+
+    std::vector<RoadMap::Node &> RoadMap::findKClosest(Point pos, int k, node_id skip)
+    {
+        typedef std::pair<float, node_id> dist_node;
+        std::set<dist_node> dist_nodes;
+        for (Node &node : _nodes)
+        {
+            if (node.getID() == skip)
+                continue;
+            float dx = pos.x - node.getX();
+            float dy = pos.y - node.getY();
+            float sqr_dist = dx * dx + dy * dy;
+            dist_nodes.insert(dist_node(sqr_dist, node));
+        }
+        std::vector<Node &> out;
+        for (size_t i = 0; i < k && !dist_nodes.empty(); i++)
+        {
+            node_id top = dist_nodes.begin()->second;
+            out.push_back(_nodes[top]);
+            dist_nodes.erase(dist_nodes.begin());
+        }
+        return out;
+    }
+
+    RoadMap::Node::Orientation &RoadMap::addStartPose(Point pos, float angle, int k, float kmax, std::vector<Polygon> obstacles, Polygon borders)
+    {
+        node_id id = _nodes.size();
+        // Check if node exists
+        for (const auto &n : _nodes)
+        {
+            if (n.getX() == pos.x && n.getY() == pos.y)
+            {
+                id = n.getID();
+                break;
+            }
+        }
+        if (id == _nodes.size())
+            _nodes.push_back(Node(this, id, pos));
+
+        size_t pose_id = _nodes[id].addPose(angle);
+        auto &pose = _nodes[id].getPose(pose_id);
+
+        auto kClosest = findKClosest(pos, k, id);
+
+        bool ok = false;
+        for (node_id &cl_id : kClosest)
+        {
+            Node &closest = _nodes[cl_id];
+            for (size_t i = 0; i < closest.getPosesCount(); i++)
+            {
+                ok = pose.connect(closest.getPose(i), kmax, obstacles, borders) || ok;
+            }
+        }
+        if (!ok)
+            throw std::logic_error("ADD START POSE - UNABLE TO CONNECT TO K-CLOSEST NODES");
+
+        return pose;
+    }
+
+    RoadMap::Node::Orientation &RoadMap::addGoalPose(Point pos, float angle, int k, float kmax, std::vector<Polygon> obstacles, Polygon borders)
+    {
+        node_id id = _nodes.size();
+        // Check if node exists
+        for (const auto &n : _nodes)
+        {
+            if (n.getX() == pos.x && n.getY() == pos.y)
+            {
+                id = n.getID();
+                break;
+            }
+        }
+        if (id == _nodes.size())
+            _nodes.push_back(Node(this, id, pos));
+
+        size_t pose_id = _nodes[id].addPose(angle);
+        auto &pose = _nodes[id].getPose(pose_id);
+
+        auto kClosest = findKClosest(pos, k, id);
+
+        bool ok = false;
+        for (node_id &cl_id : kClosest)
+        {
+            Node &closest = _nodes[cl_id];
+            for (size_t i = 0; i < closest.getPosesCount(); i++)
+            {
+                ok = closest.getPose(i).connect(pose, kmax, obstacles, borders) || ok;
+            }
+        }
+        if (!ok)
+            throw std::logic_error("ADD GOAL POSE - UNABLE TO CONNECT FROM K-CLOSEST NODES");
+
+        return pose;
+    }
 
     unsigned long RoadMap::build(unsigned int orientationsPerNode, float const &kmax, const std::vector<Polygon> &obstacles, const Polygon &borders)
     {

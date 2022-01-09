@@ -198,7 +198,7 @@ namespace rm
              * @return Reference to the RoadMap object this node belongs to
              */
             RoadMap &getRoadMap();
-            
+
             /**
              * @brief Connect this Node object to another Node object in the base directed graph of the RoadMap
              * 
@@ -304,6 +304,32 @@ namespace rm
         node_id addNode(Point pos);
 
         /**
+         * @brief Add a positional node and dedicated pose for the starting point of a robot
+         * 
+         * @param pos       Position of the start point
+         * @param angle     Angle of the start pose with respect to the x-axis, measured counter-clockwise
+         * @param k         Number of closest nodes the start pose should be connected to
+         * @param kmax      Maximum curvature of dubins paths
+         * @param obstacles Obstacles for collision checking
+         * @param borders   Borders for collision checking
+         * @return          Reference to the created pose
+         */
+        Node::Orientation &addStartPose(Point pos, float angle, int k, float kmax, std::vector<Polygon> obstacles, Polygon borders);
+
+        /**
+         * @brief Add a positional node and dedicated pose for the goal point of a robot
+         * 
+         * @param pos       Position of the goal point
+         * @param angle     Angle of the goal pose with respect to the x-axis, measured counter-clockwise
+         * @param k         Number of closest nodes the start pose should be connected to
+         * @param kmax      Maximum curvature of dubins paths
+         * @param obstacles Obstacles for collision checking
+         * @param borders   Borders for collision checking
+         * @return          Reference to the created pose
+         */
+        Node::Orientation &addGoalPose(Point pos, float angle, int k, float kmax, std::vector<Polygon> obstacles, Polygon borders);
+
+        /**
          * @brief Connect two Node objects in the base directed graph of the RoadMap
          * 
          * @param fromID    ID of the starting Node object
@@ -342,5 +368,15 @@ namespace rm
          * @return      Reference to the Node object with given ID
          */
         Node &getNode(node_id id);
+
+        /**
+         * @brief Find the closest node to a given position
+         * 
+         * @param pos   Position
+         * @param k     Number of closest points
+         * @param skip  ID of node that should be skipped in the search
+         * @return      Vector of references to the closest nodes
+         */
+        std::vector<Node &> findKClosest(Point pos, int k, node_id skip = -1);
     }; // RoadMap
 }

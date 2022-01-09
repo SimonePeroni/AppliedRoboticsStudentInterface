@@ -9,10 +9,11 @@
 namespace nav
 {
     navList dijkstraShortestPath(const rm::RoadMap::Node::Orientation &source,
-                                 const rm::RoadMap::Node::Orientation &goal,
-                                 const rm::RoadMap &roadmap)
+                                 const rm::RoadMap::Node::Orientation &goal)
     {
         typedef std::pair<float, const rm::RoadMap::Node::Orientation &> dist_pose;
+
+        rm::RoadMap &roadmap = source.getNode().getRoadMap();
 
         float INF = std::numeric_limits<float>::infinity();
         std::vector<std::vector<float>> dist(

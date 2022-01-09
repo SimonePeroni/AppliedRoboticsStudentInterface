@@ -340,7 +340,7 @@ namespace dubins
 					   sc_s2, ksigns[pidx][1] * sc_kmax,
 					   sc_s3, ksigns[pidx][2] * sc_kmax,
 					   sc_th0, sc_thf))
-				throw std::logic_error("DUBINS - INCORRECT COMPUTED SOLUTION");
+				return false; //throw std::logic_error("DUBINS - INCORRECT COMPUTED SOLUTION");
 
 			return true;
 		}

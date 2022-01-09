@@ -9,8 +9,8 @@ namespace rm
     {
         Point p0;
         Point p1;
-        Segment(int x1, int y1, int x2, int y2) : p0(x1, y1), p1(x2, y2) {}
-        Segment(Point p0, Point p1) : p0(p0), p1(p1) {}
+        inline Segment(float x1, float y1, float x2, float y2) : p0(Point(x1, y1)), p1(Point(x2, y2)) {}
+        inline Segment(Point p0, Point p1) : p0(p0), p1(p1) {}
     };
 
     struct Box

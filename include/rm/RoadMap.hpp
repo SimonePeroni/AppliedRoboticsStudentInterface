@@ -208,69 +208,21 @@ namespace rm
             /**
              * @brief Connect this Node object to another Node object in the base directed graph of the RoadMap
              * 
-             * @param to ID of the Node object this node should be connected to
+             * @param to    ID of the Node object this node should be connected to
+             * @return      true if a new connection was created, false otherwise
              */
-            void connectTo(node_id to);
+            bool connectTo(node_id to);
+
+            /**
+             * @brief Disconnect this Node object from another Node object in the base directed graph of the RoadMap
+             * 
+             * @param to ID of the Node object this node is connected to
+             * @return   true if existing connection was found and removed, false otherwise
+             */
+            bool disconnect(node_id to);
 
             operator node_id() const;
         }; // Node
-
-        /**
-         * @brief Edge of the base directed graph of the RoadMap
-         * 
-         */
-        class Edge
-        {
-        private:
-            node_id _from;
-            node_id _to;
-            RoadMap *_parent;
-
-        public:
-            /**
-             * @brief Construct a new Edge object
-             * 
-             * @param parent    Pointer to the RoadMap object this edge belongs to
-             * @param from      ID of the starting Node object
-             * @param to        ID of the destination Node object
-             */
-            Edge(RoadMap *parent, node_id from, node_id to);
-
-            /**
-             * @brief Get the ID of the starting Node object
-             * 
-             * @return ID of the starting Node object 
-             */
-            node_id getFromID() const;
-
-            /**
-             * @brief Get the ID of the destination Node object
-             * 
-             * @return ID of the destination Node object 
-             */
-            node_id getToID() const;
-
-            /**
-             * @brief Get the starting Node object
-             * 
-             * @return Reference of the starting Node object 
-             */
-            Node &getFromNode() const;
-
-            /**
-             * @brief Get the destination Node object
-             * 
-             * @return Reference of the destination Node object 
-             */
-            Node &getToNode() const;
-
-            /**
-             * @brief Get the parent RoadMap object
-             * 
-             * @return Reference to the parent RoadMap object
-             */
-            RoadMap &getRoadMap();
-        }; // Edge
 
         /**
          * @brief Connection between two poses formed by a Dubins path
@@ -298,7 +250,6 @@ namespace rm
 
     private:
         std::vector<Node> _nodes;
-        std::vector<Edge> _edges;
 
     public:
         /**
@@ -340,8 +291,18 @@ namespace rm
          * 
          * @param fromID    ID of the starting Node object
          * @param toID      ID of the destination Node object
+         * @return          true if a new edge was created, false otherwise
          */
-        void connect(node_id fromID, node_id toID);
+        bool connect(node_id fromID, node_id toID);
+
+        /**
+         * @brief Remove an existing connection between two Node objects in the base directed graph of the RoadMap
+         * 
+         * @param fromID    ID of the starting Node object
+         * @param toID      ID of the destination Node object
+         * @return          true if the edge was found and removed, false otherwise
+         */
+        bool disconnect(node_id fromID, node_id toID);
 
         /**
          * @brief Build the roadmap.
@@ -384,5 +345,13 @@ namespace rm
          * @return      Vector of references to the closest nodes
          */
         std::vector<node_id> findKClosest(Point pos, int k, node_id skip = -1);
+
+        /**
+         * @brief Create extra edges to make sure short edges can be skipped
+         * 
+         * @param min_dist  Minimum edge distance
+         * @return          Number of new edges created in the base directed graph of the roadmap
+         */
+        size_t bypass(float min_dist);
     }; // RoadMap
 }

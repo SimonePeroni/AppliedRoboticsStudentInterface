@@ -23,9 +23,9 @@ namespace rm
         return id;
     }
 
-    void RoadMap::connect(node_id fromID, node_id toID)
+    bool RoadMap::connect(node_id fromID, node_id toID)
     {
-        _edges.push_back(Edge(this, fromID, toID));
+        return _nodes[fromID].connectTo(toID);
     }
 
     size_t RoadMap::getNodeCount() const { return _nodes.size(); }
@@ -125,6 +125,47 @@ namespace rm
         return pose;
     }
 
+    size_t RoadMap::bypass(float min_dist)
+    {
+        size_t count = 0;
+        size_t old_count = -1;
+
+        while (old_count != count)
+        {
+            old_count = count;
+            for (Node &node : _nodes)
+            {
+                std::vector<node_id> to_disconnect;
+                for (size_t i = 0; i < node.getConnectedCount(); i++)
+                {
+                    Node &connected = node.getConnected(i);
+                    float dist = std::hypotf(node.getX() - connected.getX(), node.getY() - connected.getY());
+                    if (dist < min_dist)
+                    {
+                        to_disconnect.push_back(connected);
+                        for (size_t j = 0; j < connected.getConnectedCount(); j++)
+                        {
+                            Node &bypass = connected.getConnected(j);
+                            if (connect(node, bypass))
+                                count++;
+                        }
+                    }
+                }
+                for (node_id &to : to_disconnect)
+                {
+                    node.disconnect(to);
+                }
+            }
+        }
+
+        return count;
+    }
+
+    bool RoadMap::disconnect(node_id from, node_id to)
+    {
+        return _nodes[from].disconnect(to);
+    }
+
     unsigned long RoadMap::build(unsigned int orientationsPerNode, float const &kmax, const std::vector<Polygon> &obstacles, const Polygon &borders)
     {
         unsigned long n_connections = 0L;
@@ -169,18 +210,6 @@ namespace rm
         return n_connections;
     }
 
-    // Edge
-    RoadMap::Edge::Edge(RoadMap *parent, node_id from, node_id to) : _from(from), _to(to), _parent(parent)
-    {
-        parent->getNode(from).connectTo(to);
-    }
-
-    RoadMap::node_id RoadMap::Edge::getFromID() const { return _from; }
-    RoadMap::node_id RoadMap::Edge::getToID() const { return _to; }
-    RoadMap::Node &RoadMap::Edge::getFromNode() const { return _parent->getNode(_from); }
-    RoadMap::Node &RoadMap::Edge::getToNode() const { return _parent->getNode(_to); }
-    RoadMap &RoadMap::Edge::getRoadMap() { return *_parent; }
-
     // Node
     RoadMap::Node::Node(RoadMap *parent, node_id id, Point pos) : _pos(pos), _id(id), _parent(parent) {}
     float RoadMap::Node::getX() const { return _pos.x; }
@@ -200,15 +229,29 @@ namespace rm
         return id;
     }
 
-    void RoadMap::Node::connectTo(node_id to)
+    bool RoadMap::Node::connectTo(node_id to)
     {
         if (to == _id)
-            return;
+            return false;
         for (auto id : _connected)
             if (id == to)
-                return;
+                return false;
 
         _connected.push_back(to);
+        return true;
+    }
+
+    bool RoadMap::Node::disconnect(node_id to)
+    {
+        for (auto node = _connected.begin(); node != _connected.end(); node++)
+        {
+            if (*node == to)
+            {
+                _connected.erase(node);
+                return true;
+            }
+        }
+        return false;
     }
 
     RoadMap::Node::operator node_id() const

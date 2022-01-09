@@ -1,4 +1,11 @@
 #pragma once
+/**
+ * @file RoadMap.hpp
+ * @brief Roadmap implementation
+ * In this file it is explained how nodes and edges are added. How connections between nodes are created through dubins paths and ultimately hoq the roadmap is created
+ * to have more details about the building process of the roadmap check: 
+ * @see void connect(node_id fromID, node_id toID);
+ */
 
 #include <vector>
 

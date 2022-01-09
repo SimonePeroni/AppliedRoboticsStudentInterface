@@ -32,7 +32,7 @@ namespace rm
 
     RoadMap::Node &RoadMap::getNode(node_id id) { return _nodes[id]; }
 
-    std::vector<RoadMap::Node &> RoadMap::findKClosest(Point pos, int k, node_id skip)
+    std::vector<RoadMap::node_id> RoadMap::findKClosest(Point pos, int k, node_id skip)
     {
         typedef std::pair<float, node_id> dist_node;
         std::set<dist_node> dist_nodes;
@@ -45,11 +45,11 @@ namespace rm
             float sqr_dist = dx * dx + dy * dy;
             dist_nodes.insert(dist_node(sqr_dist, node));
         }
-        std::vector<Node &> out;
+        std::vector<node_id> out;
         for (size_t i = 0; i < k && !dist_nodes.empty(); i++)
         {
             node_id top = dist_nodes.begin()->second;
-            out.push_back(_nodes[top]);
+            out.push_back(top);
             dist_nodes.erase(dist_nodes.begin());
         }
         return out;

@@ -377,6 +377,6 @@ namespace rm
          * @param skip  ID of node that should be skipped in the search
          * @return      Vector of references to the closest nodes
          */
-        std::vector<Node &> findKClosest(Point pos, int k, node_id skip = -1);
+        std::vector<node_id> findKClosest(Point pos, int k, node_id skip = -1);
     }; // RoadMap
 }

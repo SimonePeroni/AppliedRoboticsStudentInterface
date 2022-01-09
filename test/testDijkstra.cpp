@@ -46,7 +46,7 @@ int main()
     auto &goal = rm.getNode(rm.getNodeCount() - 1).getPose(0);
 
     auto tic = std::chrono::high_resolution_clock::now();
-    auto path = nav::dijkstraShortestPath(source, goal, rm);
+    auto path = nav::dijkstraShortestPath(source, goal);
     auto toc = std::chrono::high_resolution_clock::now();
 
     std::chrono::duration<float, std::milli> duration = toc - tic;

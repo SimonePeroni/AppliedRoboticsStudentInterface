@@ -48,18 +48,20 @@ int main()
 
     rm::RoadMap rm = rm::maxClearance(infObstacles, infBorders);
 
+    size_t bypass_edges = rm.bypass(0.1f);
+
     std::cout << "number of nodes in rm: " << rm.getNodeCount() << std::endl;
-/*     for (size_t i = 0; i < rm.getNodeCount(); i++)
-    {
-        auto node = rm.getNodeAt(i);
-        std::cout << "Node_" << node.getID() << std::endl
-                  << " X: " << node.getX() << std::endl
-                  << " Y: " << node.getY() << std::endl;
-    } */
+    std::cout << "number of bypass edges: " << bypass_edges << std::endl;
     for (size_t i = 0; i < rm.getNodeCount(); i++)
     {
         auto node = rm.getNode(i);
-        std::cout << "plot(" << node.getX() << ", " << node.getY() << ", '*')" << std::endl;
+        std::cout << "plot(" << node.getX() << ", " << node.getY() << ", 'b*')" << std::endl;
+        for (size_t j = 0; j < node.getConnectedCount(); j++)
+        {
+            auto other = node.getConnected(j);
+            std::cout << "plot([" << node.getX() << ", " << other.getX() << "], ["<< node.getY() << ", " << other.getY() << "], 'b-')" << std::endl;
+        }
+        
     }
     auto tic = std::chrono::high_resolution_clock::now();
     auto n_connections = rm.build(8, 10.0f, infObstacles, infBorders);

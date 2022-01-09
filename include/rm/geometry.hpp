@@ -1,4 +1,9 @@
 #pragma once
+/**
+ * @file geometry.hpp
+ * @brief implementation of the collision avoidance 
+ * 
+ */
 
 #include "utils.hpp"
 #include "dubins/dubins.hpp"

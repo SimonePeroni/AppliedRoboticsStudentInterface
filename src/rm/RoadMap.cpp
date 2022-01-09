@@ -195,8 +195,9 @@ namespace rm
 
     size_t RoadMap::Node::addPose(float theta)
     {
-        _poses.push_back(Orientation(this, _poses.size(), theta));
-        return _poses.size() - 1;
+        size_t id = _poses.size();
+        _poses.push_back(Orientation(this, id, theta));
+        return id;
     }
 
     void RoadMap::Node::connectTo(node_id to)

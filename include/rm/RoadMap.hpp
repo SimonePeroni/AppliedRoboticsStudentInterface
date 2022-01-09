@@ -111,7 +111,6 @@ namespace rm
 
         private:
             RoadMap *_parent;
-            size_t _idx_in_parent;
             node_id _id;
             Point _pos;
             std::vector<Orientation> _poses;

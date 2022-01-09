@@ -15,18 +15,25 @@ namespace nav
 
         rm::RoadMap &roadmap = source.getNode().getRoadMap();
 
+        // source and goal nodes will most often have a different number of poses (most likely 1)
+        // so we get the number of poses of an intermediate node
+        size_t max_poses_count = source.getConnection(0).to->getNode().getPosesCount();
+
         float INF = std::numeric_limits<float>::infinity();
         std::vector<std::vector<float>> dist(
             roadmap.getNodeCount(),
             std::vector<float>(
-                source.getNode().getPosesCount(),
+                max_poses_count,
                 INF));
         std::vector<std::vector<rm::RoadMap::DubinsConnection const *>> from(
             roadmap.getNodeCount(),
             std::vector<rm::RoadMap::DubinsConnection const *>(
-                source.getNode().getPosesCount(),
+                max_poses_count,
                 nullptr));
-        std::set<dist_pose> set_dist_pose;
+
+        auto cmp = [](dist_pose a, dist_pose b)
+        { return a.first == b.first ? &a.second < &b.second : a < b; };
+        std::set<dist_pose, decltype(cmp)> set_dist_pose(cmp);
 
         dist[source.getNode()][source] = 0.0f;
         set_dist_pose.insert(dist_pose(0.0f, source));

@@ -39,7 +39,7 @@ int main()
     std::vector<Polygon> infObstacles = rm::inflate(obstacles, offset, true);
     Polygon infBorders = rm::inflate(std::vector<Polygon>{borders}, -offset).back();
 
-    float kmax = 100.0f;
+    float kmax = 50.0f;
     rm::RoadMap rm = rm::maxClearance(infObstacles, infBorders);
     rm.build(8, kmax, infObstacles, infBorders);
 
@@ -47,7 +47,7 @@ int main()
     //auto &goal = rm.getNode(rm.getNodeCount() - 1).getPose(0);
 
     auto &source = rm.addStartPose(Point(0.9, 0.9), 0.0f, 3, kmax, infObstacles, infBorders);
-    auto &goal = rm.addGoalPose(Point(0.3, 0.4), M_PI * 7/4, 3, kmax, infObstacles, infBorders);
+    auto &goal = rm.addGoalPose(Point(0.1, 0.15), 0.0f, 3, kmax, infObstacles, infBorders);
 
     auto tic = std::chrono::high_resolution_clock::now();
     auto path = nav::dijkstraShortestPath(source, goal);

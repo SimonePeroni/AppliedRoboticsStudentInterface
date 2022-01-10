@@ -2,21 +2,6 @@
 Package used by student to complete the assignment of the course.
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-# BUILDING 
+Check the following link to view the project description and documentation:
 
-# USING 
-
---------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# Structure 
-
-## RoadMap 
-
-### Obstacle inflation
-
-### Voronoi Diagram
-
-## Dubins 
-
-## Pursuer-Evader Strategy
-
-### Dijkstra implementation
+check <a href="https://mariotilocca98.github.io/document.github.io/" target="_blank">Documentation</a>

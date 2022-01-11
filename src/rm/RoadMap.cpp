@@ -31,6 +31,8 @@ namespace rm
     size_t RoadMap::getNodeCount() const { return _nodes.size(); }
 
     RoadMap::Node &RoadMap::getNode(node_id id) { return _nodes[id]; }
+    
+    const RoadMap::Node &RoadMap::getNode(node_id id) const { return _nodes[id]; }
 
     std::vector<RoadMap::node_id> RoadMap::findKClosest(Point pos, int k, node_id skip)
     {

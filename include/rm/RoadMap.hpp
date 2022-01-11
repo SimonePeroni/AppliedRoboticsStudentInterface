@@ -337,6 +337,14 @@ namespace rm
         Node &getNode(node_id id);
 
         /**
+         * @brief Get a Node object by its ID
+         * 
+         * @param id    ID of the Node object
+         * @return      Read-only reference to the Node object with given ID
+         */
+        const Node &getNode(node_id id) const;
+
+        /**
          * @brief Find the closest node to a given position
          * 
          * @param pos   Position

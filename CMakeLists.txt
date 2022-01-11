@@ -28,10 +28,13 @@ add_library(student SHARED
    src/rm/maxClearance.cpp
    src/rm/RoadMap.cpp
    src/rm/geometry.cpp
+   src/rm/visibility.cpp
   # dubins
    src/dubins/dubins.cpp
   # navigation
    src/nav/dijkstra.cpp
+  #utils
+   src/utils/timer.cpp
 )
 
 target_link_libraries(student

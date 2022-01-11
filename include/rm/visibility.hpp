@@ -7,5 +7,8 @@
 
 namespace rm
 {
-    void visibility(RoadMap &roadmap, const std::vector<Polygon> &obstacles, const Polygon &borders);
+    void visibility(RoadMap &roadmap, const std::vector<Point> points, const std::vector<Polygon> &obstacles, const Polygon &borders);
+
+    void makeVisibilityNodes(const std::vector<Polygon> &obstacles, const Polygon &borders,
+                             float offset, std::vector<Point> &nodes);
 }

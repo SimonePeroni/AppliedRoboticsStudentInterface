@@ -16,10 +16,11 @@ namespace nav
 
  /**
  * @brief 
- * @param source staring node
- * @param goal goal node 
- * @param roadmap complete roadmap 
- * @return navList 
+ * 
+ * @param source  Starting node
+ * @param goal    Goal node
+ * @return        List of pointers to DubinsConnection, representing the full path from start to goal
+ * @deprecated    USE NavMap INSTEAD
  */
     navList dijkstraShortestPath(const rm::RoadMap::Node::Orientation &source,
                                  const rm::RoadMap::Node::Orientation &goal);

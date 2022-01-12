@@ -1,4 +1,4 @@
-#include <limits>
+#include <cmath>
 #include <set>
 #include <utility>
 #include <vector>
@@ -19,12 +19,11 @@ namespace nav
         // so we get the number of poses of an intermediate node
         size_t max_poses_count = source.getConnection(0).to->getNode().getPosesCount();
 
-        float INF = std::numeric_limits<float>::infinity();
         std::vector<std::vector<float>> dist(
             roadmap.getNodeCount(),
             std::vector<float>(
                 max_poses_count,
-                INF));
+                INFINITY));
         std::vector<std::vector<rm::RoadMap::DubinsConnection const *>> from(
             roadmap.getNodeCount(),
             std::vector<rm::RoadMap::DubinsConnection const *>(
@@ -55,7 +54,7 @@ namespace nav
                 if (dist[adj_pose.getNode()][adj_pose] > dist_from_adjpose + dist[current_source_pose.getNode()][current_source_pose])
                 {
                     // Remove from set to avoid duplicates
-                    if (dist[adj_pose.getNode()][adj_pose] != INF)
+                    if (dist[adj_pose.getNode()][adj_pose] != INFINITY)
                         set_dist_pose.erase(set_dist_pose.find(dist_pose(dist[adj_pose.getNode()][adj_pose], adj_pose)));
                     // Update distance and shortest connection
                     dist[adj_pose.getNode()][adj_pose] = dist_from_adjpose + dist[current_source_pose.getNode()][current_source_pose];

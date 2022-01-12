@@ -41,7 +41,7 @@ namespace rm
                 float _theta;
                 Node *_parent;
                 std::vector<rm::RoadMap::DubinsConnection> _connections;
-                std::vector<rm::RoadMap::DubinsConnection*> _from;
+                std::vector<rm::RoadMap::DubinsConnection> _from;
                 size_t _id;
 
             public:

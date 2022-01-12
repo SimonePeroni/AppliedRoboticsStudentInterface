@@ -101,7 +101,7 @@ namespace nav
                 float dist_from_adjpose = connection.path.L;
 
                 // Edge relaxation
-                if (_dist[adj_pose.getNode()][adj_pose] < dist_from_adjpose + _dist[current_source_pose.getNode()][current_source_pose])
+                if (_dist[adj_pose.getNode()][adj_pose] < _dist[current_source_pose.getNode()][current_source_pose] - dist_from_adjpose)
                 {
                     // Remove from set to avoid duplicates
                     if (_dist[adj_pose.getNode()][adj_pose] != -INFINITY)
@@ -110,7 +110,7 @@ namespace nav
                     _dist[adj_pose.getNode()][adj_pose] = _dist[current_source_pose.getNode()][current_source_pose] - dist_from_adjpose;
                     _connection[adj_pose.getNode()][adj_pose] = &connection;
                     // Add node to set
-                    set_dist_pose.insert(dist_pose(_dist[adj_pose.getNode()][adj_pose], adj_pose));
+                    set_dist_pose.insert(dist_pose(-_dist[adj_pose.getNode()][adj_pose], adj_pose));
                 }
             }
         }

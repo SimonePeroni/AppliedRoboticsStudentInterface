@@ -283,6 +283,7 @@ namespace rm
         if (success)
         {
             _connections.push_back(RoadMap::DubinsConnection(this, &other, curve));
+            other._from.push_back(_connections.back());
             return true;
         }
         return false;
@@ -295,6 +296,6 @@ namespace rm
     size_t RoadMap::Node::Orientation::getFromConnectionCount() const { return _from.size(); }
     rm::RoadMap::DubinsConnection &RoadMap::Node::Orientation::getConnection(size_t index) { return _connections[index]; };
     const rm::RoadMap::DubinsConnection &RoadMap::Node::Orientation::getConnection(size_t index) const { return _connections[index]; };
-    const rm::RoadMap::DubinsConnection &RoadMap::Node::Orientation::getFromConnection(size_t index) const { return *_from[index]; };
+    const rm::RoadMap::DubinsConnection &RoadMap::Node::Orientation::getFromConnection(size_t index) const { return _from[index]; };
     RoadMap::Node::Orientation::operator std::size_t() const { return _id; }
 }

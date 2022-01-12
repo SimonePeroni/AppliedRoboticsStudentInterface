@@ -35,6 +35,7 @@ add_library(student SHARED
    src/nav/dijkstra.cpp
   #utils
    src/utils/timer.cpp
+   src/utils/MatlabPlot.cpp
 )
 
 target_link_libraries(student

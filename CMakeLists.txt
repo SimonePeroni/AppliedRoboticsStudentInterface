@@ -33,6 +33,7 @@ add_library(student SHARED
    src/dubins/dubins.cpp
   # navigation
    src/nav/dijkstra.cpp
+   src/nav/NavMap.cpp
   #utils
    src/utils/timer.cpp
    src/utils/MatlabPlot.cpp

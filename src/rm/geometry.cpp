@@ -86,7 +86,7 @@ namespace rm
         return collisionCheck(curve.arc_1, p) || collisionCheck(curve.arc_2, p) || collisionCheck(curve.arc_3, p);
     }
 
-    bool collisionCheck(const float &rho, const Point &center, const float &th0, const float &th1, const Segment &s)
+    bool collisionCheck(const float &rho, const Point &center, float th0, float th1, const Segment &s)
     {
         // parameterized equation
         float dx21 = s.p1.x - s.p0.x;
@@ -102,36 +102,18 @@ namespace rm
             return false;
         float tSqrtDelta = std::sqrt(tDelta);
         float t[2] = {(-b - tSqrtDelta) / a, (-b + tSqrtDelta) / a};
-        // check if there are no segment-circumference intersections
-        bool isIntersection[2] = {t[0] > 0.f && t[0]<1.f, t[1]> 0.f && t[1] < 1.f};
+        // check if there are segment-circumference intersections
+        bool isIntersection[2] = {t[0] >= 0.f && t[0] <= 1.f, t[1] >= 0.f && t[1] <= 1.f};
         // check if intersections lie on arc
         for (size_t i = 0; i < 2; i++)
         {
             if (isIntersection[i])
             {
-                float xt = s.p0.x + t[i] * (s.p1.x - s.p0.x);
-                float yt = s.p0.y + t[i] * (s.p1.y - s.p0.y);
-                float tht = dubins::mod2pi(std::atan2(yt - center.y, xt - center.x));
-                if (rho > 0)
-                {
-                    if (th1 > th0)
-                    {
-                        if (tht >= th0 && tht <= th1)
-                            return true;
-                    }
-                    else if (tht >= th0 || tht <= th1)
-                        return true;
-                }
-                else
-                {
-                    if (th1 > th0)
-                    {
-                        if (tht <= th0 || tht >= th1)
-                            return true;
-                    }
-                    else if (tht <= th0 && tht >= th1)
-                        return true;
-                }
+                float xt = s.p0.x + t[i] * dx21;
+                float yt = s.p0.y + t[i] * dy21;
+                float tht = std::atan2(yt - center.y, xt - center.x);
+                if (inAngleRange(tht, th0, th1, rho < 0))
+                    return true;
             }
         }
         // return false if no intersection was found
@@ -152,9 +134,11 @@ namespace rm
         // center of curvature
         float xc = arc.start.x - rho * std::sin(arc.start.theta);
         float yc = arc.start.y + rho * std::cos(arc.start.theta);
+        float th0 = std::atan2(arc.start.y - yc, arc.start.x - xc);
+        float th1 = std::atan2(arc.end.y - yc, arc.end.x - xc);
         for (auto &edge : getEdges(p))
         {
-            if (collisionCheck(rho, Point(xc, yc), arc.start.theta, arc.end.theta, edge))
+            if (collisionCheck(rho, Point(xc, yc), th0, th1, edge))
                 return true;
         }
         return false;
@@ -197,5 +181,23 @@ namespace rm
     {
         float det = s.p0.x * (s.p1.y - p.y) + s.p0.y * (p.x - s.p1.x) + s.p1.x * p.y - s.p1.y * p.x;
         return det <= 0;
+    }
+
+    bool inAngleRange(float theta, float th0, float th1, bool clockwise)
+    {
+        if (clockwise)
+        {
+            float tmp = th0;
+            th0 = th1;
+            th1 = tmp;
+        }
+        const float p = 2 * M_PI;
+        while (th0 > th1)
+            th0 -= p;
+        while (theta > th1)
+            theta -= p;
+        while (theta < th0)
+            theta += p;
+        return theta <= th1;
     }
 }

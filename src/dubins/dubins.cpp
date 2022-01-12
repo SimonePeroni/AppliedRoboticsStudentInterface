@@ -32,26 +32,22 @@ namespace dubins
 	{
 		float p = 2.0f * M_PI;
 		while (angle < 0)
-		{
-			angle = angle + p;
-		}
+			angle += p;
 		while (angle >= p)
-		{
-			angle = angle - p;
-		}
+			angle -= p;
 		return angle;
 	}
 
 	// --------------- We need this function to normalize the angle in the range -180 to 180 deg --------------------------------
 
-	float normAngle(float ang)
+	float normAngle(float angle)
 	{
 		float p = 2.0f * M_PI;
-		while (ang <= -M_PI)
-			ang = ang + p;
-		while (ang > M_PI)
-			ang = ang - p;
-		return ang;
+		while (angle <= -M_PI)
+			angle += p;
+		while (angle > M_PI)
+			angle -= p;
+		return angle;
 	}
 
 	// --------------------------------------

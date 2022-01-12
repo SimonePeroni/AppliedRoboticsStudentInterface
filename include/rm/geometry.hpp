@@ -74,7 +74,7 @@ namespace rm
      * @param s         Segment to verify collision with.
      * @return          true if a collision between the arc and the segment was detected, false otherwise.
      */
-    bool collisionCheck(const float &rho, const Point &c, const float &th0, const float &th1, const Segment &s);
+    bool collisionCheck(const float &rho, const Point &c, float th0, float th1, const Segment &s);
 
     bool collisionCheck(const dubins::DubinsCurve &curve, const Polygon &p);
 
@@ -83,4 +83,6 @@ namespace rm
     std::vector<Segment> getEdges(const Polygon &p);
 
     bool isRightOfOrOn(const Point &p, const Segment &s);
+
+    bool inAngleRange(float theta, float th0, float th1, bool clockwise = false);
 }

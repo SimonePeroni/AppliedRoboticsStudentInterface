@@ -13,3 +13,7 @@ target_link_libraries(test_roadmap student)
 # Test Dijkstra
 add_executable(test_dijkstra testDijkstra.cpp)
 target_link_libraries(test_dijkstra student)
+
+# Test Collision
+add_executable(test_collision testCollision.cpp)
+target_link_libraries(test_collision student)

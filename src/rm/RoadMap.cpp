@@ -224,6 +224,7 @@ namespace rm
     size_t RoadMap::Node::getPosesCount() const { return _poses.size(); }
     void RoadMap::Node::clearPoses() { _poses.clear(); }
     RoadMap::Node::Orientation &RoadMap::Node::getPose(size_t index) { return _poses[index]; }
+    const RoadMap::Node::Orientation &RoadMap::Node::getPose(size_t index) const { return _poses[index]; }
     size_t RoadMap::Node::getConnectedCount() const { return _connected.size(); }
     RoadMap::Node &RoadMap::Node::getConnected(size_t index) { return _parent->getNode(_connected[index]); }
     RoadMap &RoadMap::Node::getRoadMap() { return *_parent; }

@@ -170,6 +170,14 @@ namespace rm
             Orientation &getPose(size_t index);
 
             /**
+             * @brief       Get a Pose object by its ID
+             * 
+             * @param index ID of the Pose object
+             * @return      Read-only reference to the Pose object at given index
+             */
+            const Orientation &getPose(size_t index) const;
+
+            /**
              * @brief   Get the number of connected nodes according to the base directed graph of the RoadMap
              * 
              * @return  Number of connected nodes

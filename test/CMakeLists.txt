@@ -2,10 +2,6 @@
 add_executable(test_inflation testInflation.cpp)
 target_link_libraries(test_inflation student)
 
-# Test dubins
-#add_executable(test_dubins testDub.cpp)
-#target_link_libraries(test_dubins student)
-
 # Test roadmap
 add_executable(test_roadmap testRoadMap.cpp)
 target_link_libraries(test_roadmap student)
@@ -17,3 +13,7 @@ target_link_libraries(test_dijkstra student)
 # Test Collision
 add_executable(test_collision testCollision.cpp)
 target_link_libraries(test_collision student)
+
+# NavMap benchmark
+add_executable(navmap_benchmark benchmarkNavMap.cpp)
+target_link_libraries(navmap_benchmark student)

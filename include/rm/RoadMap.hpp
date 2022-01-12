@@ -41,6 +41,7 @@ namespace rm
                 float _theta;
                 Node *_parent;
                 std::vector<rm::RoadMap::DubinsConnection> _connections;
+                std::vector<rm::RoadMap::DubinsConnection*> _from;
                 size_t _id;
 
             public:
@@ -104,9 +105,24 @@ namespace rm
                  * @brief       Get a connection starting from this pose by its index
                  * 
                  * @param index Index of the connection in the connection list stored in the pose
-                 * @return      Constant reference to the connection at the given index
+                 * @return      Read-only reference to the connection at the given index
                  */
                 const rm::RoadMap::DubinsConnection &getConnection(size_t index) const;
+
+                /**
+                 * @brief Get the number of connections leading to this node
+                 * 
+                 * @return Number of connections
+                 */
+                size_t getFromConnectionCount() const;
+
+                /**
+                 * @brief       Get a connection leading to this pose by its index
+                 * 
+                 * @param index Index of the connection in the connection list stored in the pose
+                 * @return      Read-only reference to the connection at the given index
+                 */
+                const rm::RoadMap::DubinsConnection &getFromConnection(size_t index) const;
 
                 /**
                  * @brief Implicit conversion of the pose to its ID

@@ -292,7 +292,9 @@ namespace rm
     size_t RoadMap::Node::Orientation::getID() const { return _id; }
     RoadMap::Node &RoadMap::Node::Orientation::getNode() const { return *_parent; }
     size_t RoadMap::Node::Orientation::getConnectionCount() const { return _connections.size(); }
+    size_t RoadMap::Node::Orientation::getFromConnectionCount() const { return _from.size(); }
     rm::RoadMap::DubinsConnection &RoadMap::Node::Orientation::getConnection(size_t index) { return _connections[index]; };
     const rm::RoadMap::DubinsConnection &RoadMap::Node::Orientation::getConnection(size_t index) const { return _connections[index]; };
+    const rm::RoadMap::DubinsConnection &RoadMap::Node::Orientation::getFromConnection(size_t index) const { return *_from[index]; };
     RoadMap::Node::Orientation::operator std::size_t() const { return _id; }
 }

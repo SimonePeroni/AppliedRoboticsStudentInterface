@@ -11,7 +11,7 @@
 #include "rm/RoadMap.hpp"
 #include "rm/visibility.hpp"
 #include "rm/inflate.hpp"
-#include "nav/dijkstra.hpp"
+#include "nav/NavMap.hpp"
 #include "dubins/dubins.hpp"
 #include "utils/timer.hpp"
 #include "utils/MatlabPlot.hpp"
@@ -83,7 +83,7 @@ namespace student
 		const float visibility_threshold = robot_size / 2.0f;	 // Minimum distance between consecutive nodes
 		const int n_poses = 8;									 // Number of poses per node
 		const float kmax = 1 / robot_size;						 // Maximum curvature of Dubins paths
-		const int k = 50;										 // Robot free movement parameter
+		const int k = 10;										 // Robot free movement parameter
 		const float step = M_PI / 16 / kmax;					 // Discretization step
 
 		utils::Timer t;
@@ -129,9 +129,15 @@ namespace student
 		auto &goal = rm.addGoalPose(Point(gate_x, gate_y), M_PI_2, k, kmax, infObstacles, borders);
 		t.toc();
 
-		// Get shortest path
-		t.tic("Running Dijkstra algorithm...");
-		auto nav_list = nav::dijkstraShortestPath(source, goal);
+		// Precompute navigation weights
+		t.tic("Precomputing navigation map (Dijkstra algorithm)...");
+		nav::NavMap nm(rm);
+		nm.compute(source);
+		t.toc();
+
+		// Get shortest path to goal
+		t.tic("Acquiring best path...");
+		auto nav_list = nm.planTo(goal);
 		t.toc();
 
 		// Discretize path

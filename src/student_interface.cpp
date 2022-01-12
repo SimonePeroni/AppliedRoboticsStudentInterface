@@ -77,11 +77,13 @@ namespace student
 		// TODO: Plan evader movements - random switch between gates at each node
 		// TODO: Plan pursuer movements according to evader state (synchronously! Can not use information about future states of the evader, only know which node it is heading to next)
 
-		float robot_size = 0.1f;	   // How can we get this from the simulator??
-		int n_poses = 8;			   // Number of poses per node
-		float kmax = 1 / robot_size;   // Maximum curvature of Dubins paths
-		int k = 50;					   // Robot free movement parameter
-		float step = M_PI / 16 / kmax; // Discretization step
+		float robot_size = 0.1f;						   // Width of the robot
+		float collision_offset = robot_size / 2.0f;		   // Offset for obstacle inflation
+		float visibility_offset = collision_offset * 1.5f; // Offset for visibility graph vertices
+		int n_poses = 8;								   // Number of poses per node
+		float kmax = 1 / robot_size;					   // Maximum curvature of Dubins paths
+		int k = 50;										   // Robot free movement parameter
+		float step = M_PI / 16 / kmax;					   // Discretization step
 
 		utils::Timer t;
 		// Inflate obstacles and borders
@@ -146,6 +148,7 @@ namespace student
 		utils::MatlabPlot mp("/tmp/student_interface_plot.m");
 		mp.plotPolygons(obstacle_list);
 		mp.plotPolygon(borders);
+		mp.plotPolygons(gate_list, "g-");
 		mp.plotGraph(rm);
 		mp.plotDiscretePath(discr_path);
 		t.toc();

@@ -80,6 +80,7 @@ namespace student
 		const float robot_size = 0.1f;							 // Width of the robot
 		const float collision_offset = robot_size / 2.0f;		 // Offset for obstacle inflation
 		const float visibility_offset = collision_offset * 1.5f; // Offset for visibility graph vertices
+		const float visibility_threshold = robot_size / 2.0f;	 // Minimum distance between consecutive nodes
 		const int n_poses = 8;									 // Number of poses per node
 		const float kmax = 1 / robot_size;						 // Maximum curvature of Dubins paths
 		const int k = 50;										 // Robot free movement parameter
@@ -95,7 +96,7 @@ namespace student
 		// Select vertices
 		t.tic("Selecting vertices for graph...");
 		std::vector<Point> vertices;
-		rm::makeVisibilityNodes(obstacle_list, borders, visibility_offset, vertices);
+		rm::makeVisibilityNodes(obstacle_list, borders, visibility_offset, vertices, visibility_threshold);
 		t.toc();
 
 		// Setup RoadMap by visibility graph

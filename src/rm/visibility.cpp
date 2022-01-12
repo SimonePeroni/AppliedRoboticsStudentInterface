@@ -38,7 +38,7 @@ namespace rm
     }
 
     void makeVisibilityNodes(const std::vector<Polygon> &obstacles, const Polygon &borders,
-                             float offset, std::vector<Point> &nodes)
+                             float offset, std::vector<Point> &nodes, float threshold)
     {
         std::vector<Polygon> clip = rm::inflate(obstacles, offset, true);
         Polygon source = rm::inflate(std::vector<Polygon>{borders}, -offset).back();
@@ -67,8 +67,18 @@ namespace rm
 
         for (auto &path : joinedPaths)
         {
+            float old_x = 1e10f, old_y = 1e10f;
             for (auto const &vertex : path)
-                nodes.push_back(Point(vertex.X / scale, vertex.Y / scale));
+            {
+                float x = vertex.X / scale;
+                float y = vertex.Y / scale;
+                if (std::hypotf(x - old_x, y - old_y) >= threshold)
+                {
+                    nodes.push_back(Point(x, y));
+                    old_x = x;
+                    old_y = y;
+                }
+            }
         }
     }
 }

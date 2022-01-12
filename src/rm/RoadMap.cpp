@@ -57,7 +57,7 @@ namespace rm
         return out;
     }
 
-    RoadMap::Node::Orientation &RoadMap::addStartPose(Point pos, float angle, int k, float kmax, std::vector<Polygon> obstacles, Polygon borders)
+    RoadMap::Node::Orientation &RoadMap::addStartPose(Point pos, float angle, int k, float kmax, const std::vector<Polygon> &obstacles, const Polygon &borders)
     {
         node_id id = _nodes.size();
         // Check if node exists
@@ -92,7 +92,7 @@ namespace rm
         return pose;
     }
 
-    RoadMap::Node::Orientation &RoadMap::addGoalPose(Point pos, float angle, int k, float kmax, std::vector<Polygon> obstacles, Polygon borders)
+    RoadMap::Node::Orientation &RoadMap::addGoalPose(Point pos, float angle, int k, float kmax, const std::vector<Polygon> &obstacles, const Polygon &borders)
     {
         node_id id = _nodes.size();
         // Check if node exists

@@ -271,7 +271,7 @@ namespace rm
          * @param borders   Borders for collision checking
          * @return          Reference to the created pose
          */
-        Node::Orientation &addStartPose(Point pos, float angle, int k, float kmax, std::vector<Polygon> obstacles, Polygon borders);
+        Node::Orientation &addStartPose(Point pos, float angle, int k, float kmax, const std::vector<Polygon> &obstacles, const Polygon &borders);
 
         /**
          * @brief Add a positional node and dedicated pose for the goal point of a robot
@@ -284,7 +284,7 @@ namespace rm
          * @param borders   Borders for collision checking
          * @return          Reference to the created pose
          */
-        Node::Orientation &addGoalPose(Point pos, float angle, int k, float kmax, std::vector<Polygon> obstacles, Polygon borders);
+        Node::Orientation &addGoalPose(Point pos, float angle, int k, float kmax, const std::vector<Polygon> &obstacles, const Polygon &borders);
 
         /**
          * @brief Connect two Node objects in the base directed graph of the RoadMap

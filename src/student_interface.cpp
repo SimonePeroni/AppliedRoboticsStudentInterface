@@ -77,25 +77,25 @@ namespace student
 		// TODO: Plan evader movements - random switch between gates at each node
 		// TODO: Plan pursuer movements according to evader state (synchronously! Can not use information about future states of the evader, only know which node it is heading to next)
 
-		float robot_size = 0.1f;						   // Width of the robot
-		float collision_offset = robot_size / 2.0f;		   // Offset for obstacle inflation
-		float visibility_offset = collision_offset * 1.5f; // Offset for visibility graph vertices
-		int n_poses = 8;								   // Number of poses per node
-		float kmax = 1 / robot_size;					   // Maximum curvature of Dubins paths
-		int k = 50;										   // Robot free movement parameter
-		float step = M_PI / 16 / kmax;					   // Discretization step
+		const float robot_size = 0.1f;							 // Width of the robot
+		const float collision_offset = robot_size / 2.0f;		 // Offset for obstacle inflation
+		const float visibility_offset = collision_offset * 1.5f; // Offset for visibility graph vertices
+		const int n_poses = 8;									 // Number of poses per node
+		const float kmax = 1 / robot_size;						 // Maximum curvature of Dubins paths
+		const int k = 50;										 // Robot free movement parameter
+		const float step = M_PI / 16 / kmax;					 // Discretization step
 
 		utils::Timer t;
 		// Inflate obstacles and borders
 		t.tic("Inflating obstacles and borders...");
-		auto infObstacles = rm::inflate(obstacle_list, robot_size, true);
-		auto infBorders = rm::inflate(std::vector<Polygon>{borders}, -robot_size, false).back();
+		auto infObstacles = rm::inflate(obstacle_list, collision_offset, true);
+		auto infBorders = rm::inflate(std::vector<Polygon>{borders}, -collision_offset, false).back();
 		t.toc();
 
 		// Select vertices
 		t.tic("Selecting vertices for graph...");
 		std::vector<Point> vertices;
-		rm::makeVisibilityNodes(obstacle_list, borders, robot_size * 1.1f, vertices);
+		rm::makeVisibilityNodes(obstacle_list, borders, visibility_offset, vertices);
 		t.toc();
 
 		// Setup RoadMap by visibility graph
@@ -146,8 +146,10 @@ namespace student
 
 		t.tic("Creating matlab file...");
 		utils::MatlabPlot mp("/tmp/student_interface_plot.m");
-		mp.plotPolygons(obstacle_list);
-		mp.plotPolygon(borders);
+		mp.plotPolygons(obstacle_list, "k-");
+		mp.plotPolygon(borders, "k-");
+		mp.plotPolygons(infObstacles);
+		mp.plotPolygon(infBorders);
 		mp.plotPolygons(gate_list, "g-");
 		mp.plotGraph(rm);
 		mp.plotDiscretePath(discr_path);

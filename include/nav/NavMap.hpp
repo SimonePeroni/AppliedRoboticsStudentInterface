@@ -16,7 +16,6 @@ namespace nav
         std::vector<std::vector<rm::RoadMap::DubinsConnection const *>> _connection;
         const rm::RoadMap &_rm;
         bool _need_computing;
-        bool _need_rebuild;
         bool _reverse;
 
         NavMap(const rm::RoadMap &roadmap, const std::vector<std::vector<float>> &dist);
@@ -28,8 +27,6 @@ namespace nav
 
         void computeReverse(const rm::RoadMap::Node::Orientation &goal);
 
-        void rebuild();
-
         void reset();
 
         navList planTo(const rm::RoadMap::Node &goal) const;
@@ -37,20 +34,11 @@ namespace nav
 
         navList planFrom(const rm::RoadMap::Node::Orientation &source) const;
 
+        navList intercept(const navList &path, float offset = 0.0f) const;
+
         bool isReverse() const;
         void setReverse(bool reverse);
-
-        NavMap operator+(const NavMap &other) const;
-        NavMap &operator+=(const NavMap &other);
-        NavMap operator-(const NavMap &other) const;
-        NavMap &operator-=(const NavMap &other);
-        NavMap operator-() const;
-        NavMap operator+(const float &other) const;
-        NavMap &operator+=(const float &other);
-        NavMap operator-(const float &other) const;
-        NavMap &operator-=(const float &other);
+        float getValue(const rm::RoadMap::Node::Orientation &pose) const;
+        float getValue(const rm::RoadMap::Node &node) const;
     };
 }
-
-nav::NavMap operator+(float a, const nav::NavMap &b);
-nav::NavMap operator-(float a, const nav::NavMap &b);

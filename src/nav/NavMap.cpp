@@ -10,22 +10,15 @@ namespace nav
 {
     NavMap::NavMap(const rm::RoadMap &roadmap) : _rm(roadmap)
     {
-        reset();
-    }
-    NavMap::NavMap(const rm::RoadMap &roadmap, const std::vector<std::vector<float>> &dist)
-        : _rm(roadmap), _dist(dist), _need_computing(false), _need_rebuild(true)
-    {
-        _connection = std::vector<std::vector<rm::RoadMap::DubinsConnection const *>>(
-            roadmap.getNodeCount(),
-            std::vector<rm::RoadMap::DubinsConnection const *>(
-                _dist[0].size(),
-                nullptr));
+        _need_computing = true;
     }
 
     void NavMap::compute(const rm::RoadMap::Node::Orientation &source)
     {
         if (_reverse)
             setReverse(false);
+        reset();
+
         typedef std::pair<float, const rm::RoadMap::Node::Orientation &> dist_pose;
 
         auto cmp = [](dist_pose a, dist_pose b)
@@ -64,7 +57,6 @@ namespace nav
         }
 
         _need_computing = false;
-        _need_rebuild = false;
         _reverse = false;
     }
 
@@ -72,11 +64,7 @@ namespace nav
     {
         if (!_reverse)
             setReverse(true);
-        _dist = std::vector<std::vector<float>>(
-            _rm.getNodeCount(),
-            std::vector<float>(
-                _rm.getNode(0).getPosesCount(),
-                -INFINITY));
+        reset();
 
         typedef std::pair<float, const rm::RoadMap::Node::Orientation &> dist_pose;
 
@@ -116,50 +104,7 @@ namespace nav
         }
 
         _need_computing = false;
-        _need_rebuild = false;
         _reverse = true;
-    }
-
-    void NavMap::rebuild()
-    {
-        if (!_need_rebuild)
-            return;
-
-        for (size_t n_id = 0; n_id < _rm.getNodeCount(); n_id++)
-        {
-            auto &node = _rm.getNode(n_id);
-            for (size_t p_id = 0; p_id < node.getPosesCount(); p_id++)
-            {
-                auto &pose = node.getPose(p_id);
-                if (_reverse)
-                {
-                    for (size_t c_id = 0; c_id < pose.getFromConnectionCount(); c_id++)
-                    {
-                        const auto &connection = pose.getFromConnection(c_id);
-                        const auto &connected = *connection.from;
-                        auto current_from = _connection[connected.getNode()][connected];
-                        if (current_from == nullptr || _dist[current_from->from->getNode()][*current_from->from] - current_from->path.L < _dist[node][pose] - connection.path.L)
-                        {
-                            _connection[connected.getNode()][connected] = &connection;
-                        }
-                    }
-                }
-                else
-                {
-                    for (size_t c_id = 0; c_id < pose.getConnectionCount(); c_id++)
-                    {
-                        const auto &connection = pose.getConnection(c_id);
-                        const auto &connected = *connection.to;
-                        auto current_from = _connection[connected.getNode()][connected];
-                        if (current_from == nullptr || _dist[current_from->from->getNode()][*current_from->from] + current_from->path.L > _dist[node][pose] + connection.path.L)
-                        {
-                            _connection[connected.getNode()][connected] = &connection;
-                        }
-                    }
-                }
-            }
-        }
-        _need_rebuild = false;
     }
 
     void NavMap::reset()
@@ -169,15 +114,13 @@ namespace nav
             _rm.getNodeCount(),
             std::vector<float>(
                 pose_count,
-                INFINITY));
+                _reverse ? -INFINITY : INFINITY));
         _connection = std::vector<std::vector<rm::RoadMap::DubinsConnection const *>>(
             _rm.getNodeCount(),
             std::vector<rm::RoadMap::DubinsConnection const *>(
                 pose_count,
                 nullptr));
         _need_computing = true;
-        _need_rebuild = false;
-        _reverse = false;
     }
 
     bool NavMap::isReverse() const
@@ -190,16 +133,48 @@ namespace nav
         if (reverse == _reverse)
             return;
         _reverse = !_reverse;
-        if (!_need_computing)
-            _need_rebuild = true;
+    }
+
+    float NavMap::getValue(const rm::RoadMap::Node::Orientation &pose) const
+    {
+        if (_need_computing)
+            return _reverse ? -INFINITY : INFINITY;
+        return _dist[pose.getNode()][pose];
+    }
+
+    float NavMap::getValue(const rm::RoadMap::Node &node) const
+    {
+        if (_need_computing)
+            return _reverse ? -INFINITY : INFINITY;
+        float best = INFINITY;
+        for (size_t i = 0; i < node.getPosesCount(); i++)
+        {
+            if (_dist[node][i] < best)
+                best = _dist[node][i];
+        }
+        return best;
+    }
+
+    navList NavMap::intercept(const navList &path, float offset) const
+    {
+        if (_reverse)
+            throw std::logic_error("NAVMAP - INTERCEPT ONLY AVAILABLE FOR DIRECT MAPS");
+        float running_length = -offset;
+        for (const auto &connection : path)
+        {
+            running_length += connection->path.L;
+            float advantage = running_length - getValue(connection->to->getNode());
+            if (advantage >= 0.0f)
+                return planTo(connection->to->getNode());
+        }
+        // If there was no chance of intercepting, go to last node
+        return planTo(path.back()->to->getNode());
     }
 
     navList NavMap::planTo(const rm::RoadMap::Node &goal) const
     {
         if (_need_computing)
             throw std::logic_error("NAVMAP - COMPUTATION REQUIRED BEFORE PLANNING");
-        if (_need_rebuild)
-            throw std::logic_error("NAVMAP - REBUILD REQUIRED BEFORE PLANNING AFTER WEIGHT UPDATE");
         size_t best_id = _dist[goal][0];
         for (size_t p_id = 1; p_id < goal.getPosesCount(); p_id++)
         {
@@ -213,8 +188,6 @@ namespace nav
     {
         if (_need_computing)
             throw std::logic_error("NAVMAP - COMPUTATION REQUIRED BEFORE PLANNING");
-        if (_need_rebuild)
-            throw std::logic_error("NAVMAP - REBUILD REQUIRED BEFORE PLANNING AFTER WEIGHT UPDATE");
         if (_reverse)
             throw std::logic_error("NAVMAP - WRONG PLANNING DIRECTION");
         navList path;
@@ -232,8 +205,6 @@ namespace nav
     {
         if (_need_computing)
             throw std::logic_error("NAVMAP - COMPUTATION REQUIRED BEFORE PLANNING");
-        if (_need_rebuild)
-            throw std::logic_error("NAVMAP - REBUILD REQUIRED BEFORE PLANNING AFTER WEIGHT UPDATE");
         if (!_reverse)
             throw std::logic_error("NAVMAP - WRONG PLANNING DIRECTION");
         navList path;
@@ -246,123 +217,4 @@ namespace nav
         }
         return path;
     }
-
-    NavMap NavMap::operator+(const NavMap &other) const
-    {
-        std::vector<std::vector<float>> out_dist;
-        for (size_t n_id = 0; n_id < _dist.size(); n_id++)
-        {
-            out_dist.push_back(std::vector<float>());
-            for (size_t p_id = 0; p_id < _dist[n_id].size(); p_id++)
-            {
-                out_dist[n_id].push_back(_dist[n_id][p_id] + other._dist[n_id][p_id]);
-            }
-        }
-        return NavMap(_rm, out_dist);
-    }
-    NavMap &NavMap::operator+=(const NavMap &other)
-    {
-        for (size_t n_id = 0; n_id < _dist.size(); n_id++)
-        {
-            for (size_t p_id = 0; p_id < _dist[n_id].size(); p_id++)
-            {
-                _dist[n_id][p_id] += other._dist[n_id][p_id];
-            }
-        }
-        return *this;
-    }
-    NavMap NavMap::operator-(const NavMap &other) const
-    {
-        std::vector<std::vector<float>> out_dist;
-        for (size_t n_id = 0; n_id < _dist.size(); n_id++)
-        {
-            out_dist.push_back(std::vector<float>());
-            for (size_t p_id = 0; p_id < _dist[n_id].size(); p_id++)
-            {
-                out_dist[n_id].push_back(_dist[n_id][p_id] - other._dist[n_id][p_id]);
-            }
-        }
-        return NavMap(_rm, out_dist);
-    }
-    NavMap &NavMap::operator-=(const NavMap &other)
-    {
-        for (size_t n_id = 0; n_id < _dist.size(); n_id++)
-        {
-            for (size_t p_id = 0; p_id < _dist[n_id].size(); p_id++)
-            {
-                _dist[n_id][p_id] -= other._dist[n_id][p_id];
-            }
-        }
-        return *this;
-    }
-    NavMap NavMap::operator-() const
-    {
-        std::vector<std::vector<float>> out_dist;
-        for (size_t n_id = 0; n_id < _dist.size(); n_id++)
-        {
-            out_dist.push_back(std::vector<float>());
-            for (size_t p_id = 0; p_id < _dist[n_id].size(); p_id++)
-            {
-                out_dist[n_id].push_back(-_dist[n_id][p_id]);
-            }
-        }
-        return NavMap(_rm, out_dist);
-    }
-    NavMap NavMap::operator+(const float &other) const
-    {
-        std::vector<std::vector<float>> out_dist;
-        for (size_t n_id = 0; n_id < _dist.size(); n_id++)
-        {
-            out_dist.push_back(std::vector<float>());
-            for (size_t p_id = 0; p_id < _dist[n_id].size(); p_id++)
-            {
-                out_dist[n_id].push_back(_dist[n_id][p_id] + other);
-            }
-        }
-        return NavMap(_rm, out_dist);
-    }
-    NavMap &NavMap::operator+=(const float &other)
-    {
-        for (size_t n_id = 0; n_id < _dist.size(); n_id++)
-        {
-            for (size_t p_id = 0; p_id < _dist[n_id].size(); p_id++)
-            {
-                _dist[n_id][p_id] += other;
-            }
-        }
-        return *this;
-    }
-    NavMap NavMap::operator-(const float &other) const
-    {
-        std::vector<std::vector<float>> out_dist;
-        for (size_t n_id = 0; n_id < _dist.size(); n_id++)
-        {
-            out_dist.push_back(std::vector<float>());
-            for (size_t p_id = 0; p_id < _dist[n_id].size(); p_id++)
-            {
-                out_dist[n_id].push_back(_dist[n_id][p_id] - other);
-            }
-        }
-        return NavMap(_rm, out_dist);
-    }
-    NavMap &NavMap::operator-=(const float &other)
-    {
-        for (size_t n_id = 0; n_id < _dist.size(); n_id++)
-        {
-            for (size_t p_id = 0; p_id < _dist[n_id].size(); p_id++)
-            {
-                _dist[n_id][p_id] -= other;
-            }
-        }
-        return *this;
-    }
-}
-
-nav::NavMap operator+(float a, const nav::NavMap &b)
-{
-    return b + a;
-}
-nav::NavMap operator-(float a, const nav::NavMap &b)
-{
-    return b - a;
 }

@@ -7,6 +7,7 @@
 #include <vector>
 #include <iostream>
 #include <chrono>
+#include <random>
 
 #include "rm/RoadMap.hpp"
 #include "rm/visibility.hpp"
@@ -70,21 +71,14 @@ namespace student
 				  const std::vector<float> x, const std::vector<float> y, const std::vector<float> theta,
 				  std::vector<Path> &path, const std::string &config_folder)
 	{
-		// TODO: Inflate obstacles. -- Implemented
-		// TODO: Construct maximum clearance graph. -- Implemented
-		// TODO: Build multilayer roadmap with finite set of orientations per node - connect only feasible dubins and save length of each edge.
-		// TODO: Implement optimal path finding algorithm. -- Dijkstra
-		// TODO: Plan evader movements - random switch between gates at each node
-		// TODO: Plan pursuer movements according to evader state (synchronously! Can not use information about future states of the evader, only know which node it is heading to next)
-
-		const float robot_size = 0.1f;							 // Width of the robot
+		const float robot_size = 0.15f;							 // Width of the robot
 		const float collision_offset = robot_size / 2.0f;		 // Offset for obstacle inflation
-		const float visibility_offset = collision_offset * 1.5f; // Offset for visibility graph vertices
+		const float visibility_offset = collision_offset * 1.4f; // Offset for visibility graph vertices
 		const float visibility_threshold = robot_size / 2.0f;	 // Minimum distance between consecutive nodes
 		const int n_poses = 8;									 // Number of poses per node
 		const float kmax = 1 / robot_size;						 // Maximum curvature of Dubins paths
-		const int k = 10;										 // Robot free movement parameter
-		const float step = M_PI / 16 / kmax;					 // Discretization step
+		const int k = 5;										 // Robot free movement parameter
+		const float step = M_PI / 64 / kmax;					 // Discretization step
 
 		utils::Timer t;
 		// Inflate obstacles and borders
@@ -111,8 +105,12 @@ namespace student
 		t.toc();
 
 		// Add initial position
-		t.tic("Adding start pose...");
-		auto &source = rm.addStartPose(Point(x[0], y[0]), theta[0], k, kmax, infObstacles, infBorders);
+		t.tic("Adding evader start pose...");
+		auto &source_e = rm.addStartPose(Point(x[0], y[0]), theta[0], k, kmax, infObstacles, infBorders);
+		t.toc();
+
+		t.tic("Adding pursuer start pose...");
+		auto &source_p = rm.addStartPose(Point(x[1], y[1]), theta[1], k, kmax, infObstacles, infBorders);
 		t.toc();
 
 		// Add gate position
@@ -130,25 +128,44 @@ namespace student
 		t.toc();
 
 		// Precompute navigation weights
-		t.tic("Precomputing navigation map (Dijkstra algorithm)...");
-		nav::NavMap nm(rm);
-		nm.compute(source);
+		t.tic("Precomputing navigation map for evader (Dijkstra algorithm)...");
+		nav::NavMap nm_e(rm);
+		nm_e.computeReverse(goal);
 		t.toc();
 
-		// Get shortest path to goal
-		t.tic("Acquiring best path...");
-		auto nav_list = nm.planTo(goal);
+		t.tic("Precomputing navigation map for pursuer (Dijkstra algorithm)...");
+		nav::NavMap nm_p(rm);
+		nm_p.compute(source_p);
+		t.toc();
+
+		// Get shortest path from source
+		t.tic("Acquiring best escape path...");
+		auto nav_list_e = nm_e.planFrom(source_e);
+		t.toc();
+
+		t.tic("Intercepting evader escape path...");
+		auto nav_list_p = nm_p.intercept(nav_list_e);
 		t.toc();
 
 		// Discretize path
-		t.tic("Discretizing path...");
+		t.tic("Discretizing path for evader...");
 		float offset = 0.0f;
-		std::vector<Pose> discr_path;
-		for (const auto &connection : nav_list)
+		std::vector<Pose> discr_path_e;
+		for (const auto &connection : nav_list_e)
 		{
-			dubins::discretizeCurve(connection->path, step, offset, discr_path);
+			dubins::discretizeCurve(connection->path, step, offset, discr_path_e);
 		}
-		path[0].setPoints(discr_path);
+		path[0].setPoints(discr_path_e);
+		t.toc();
+
+		t.tic("Discretizing path for pursuer...");
+		offset = 0.0f;
+		std::vector<Pose> discr_path_p;
+		for (const auto &connection : nav_list_p)
+		{
+			dubins::discretizeCurve(connection->path, step, offset, discr_path_p);
+		}
+		path[1].setPoints(discr_path_p);
 		t.toc();
 
 		t.tic("Creating matlab file...");
@@ -159,7 +176,8 @@ namespace student
 		mp.plotPolygon(infBorders);
 		mp.plotPolygons(gate_list, "g-");
 		mp.plotGraph(rm);
-		mp.plotDiscretePath(discr_path);
+		mp.plotDiscretePath(discr_path_e);
+		mp.plotDiscretePath(discr_path_p, "k.");
 		t.toc();
 	}
 }

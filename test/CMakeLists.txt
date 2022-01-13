@@ -17,7 +17,3 @@ target_link_libraries(test_collision student)
 # Test NavMap
 add_executable(test_navmap testNavMap.cpp)
 target_link_libraries(test_navmap student)
-
-# NavMap benchmark
-add_executable(navmap_benchmark benchmarkNavMap.cpp)
-target_link_libraries(navmap_benchmark student)

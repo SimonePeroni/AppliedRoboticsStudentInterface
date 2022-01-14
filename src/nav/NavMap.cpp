@@ -164,7 +164,7 @@ namespace nav
     {
         if (_need_computing)
             throw std::logic_error("NAVMAP - COMPUTATION REQUIRED BEFORE PLANNING");
-        size_t best_id = _dist[goal][0];
+        size_t best_id = 0;
         for (size_t p_id = 1; p_id < goal.getPosesCount(); p_id++)
         {
             if (_dist[goal][p_id] < _dist[goal][best_id])

@@ -32,7 +32,6 @@ namespace nav
                 // Pick random exit
                 goal = dist(mt);
                 // Plan path to that exit
-                std::cout << "Planning path for evader" << std::endl;
                 auto tmp_path = nm_e[goal].planFrom(nav_list_e.empty() ? source_e : *nav_list_e.back()->to);
                 // Add segment to output
                 nav_list_e.push_back(tmp_path.front());
@@ -51,20 +50,16 @@ namespace nav
                 // Goal reached?
                 if (tmp_path.size() == 1)
                 {
-                    std::cout << "Evader heading to goal" << std::endl;
                     evader_s = INFINITY;
                     break;
                 }
             }
             
             // Move pursuer
-
-            std::cout << "Planning path for pursuer" << std::endl;
             nav::navList tmp_path;
             auto e_best_path = nm_e[goal].planFrom(nav_list_e.empty() ? source_e : *nav_list_e.back()->from);
             if (e_best_path.size() == 1)
             {
-                std::cout << "Evader heading to goal" << std::endl;
                 tmp_path = nm_e[goal].planFrom(nav_list_p.empty() ? source_p : *nav_list_p.back()->to);
             }
             else
@@ -72,21 +67,21 @@ namespace nav
                 // Recompute navmap
                 nm_p.compute(nav_list_p.empty() ? source_p : *nav_list_p.back()->to);
                 // Intercept evader to current goal
-                std::cout << "Intercepting evader" << std::endl;
                 try
-                {tmp_path = nm_p.intercept(e_best_path, e_best_path.front()->path.L - evader_s + pursuer_s);}
-                catch (const std::exception &e)
                 {
-                    std::cout << "EXCEPTION RAISED: " << e.what() << std::endl;
+                    tmp_path = nm_p.intercept(e_best_path, e_best_path.front()->path.L - evader_s + pursuer_s);
+                }
+                catch(const std::exception& e)
+                {
+                    pursuer_s = INFINITY;
+                    continue;
                 }
                 
-                std::cout << "Interception found" << std::endl;
             }
             while (pursuer_s < evader_s)
             {
                 if (tmp_path.empty())
                 {
-                    std::cout << "Got to end" << std::endl;
                     if (nav_list_e.back()->to->getNode().getID() == nav_list_p.back()->to->getNode().getID())
                         return;
                     pursuer_s = evader_s;

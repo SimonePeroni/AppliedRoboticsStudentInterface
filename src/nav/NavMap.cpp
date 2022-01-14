@@ -180,6 +180,8 @@ namespace nav
         if (_reverse)
             throw std::logic_error("NAVMAP - WRONG PLANNING DIRECTION");
         navList path;
+        if (_dist[goal.getNode()][goal] == 0.0f)
+            return path;
         path.push_front(_connection[goal.getNode()][goal]);
         if (path.front() == nullptr)
             throw std::logic_error("NAVMAP - NO EXISTING PATH CONNECTING SOURCE AND GOAL");
@@ -197,6 +199,8 @@ namespace nav
         if (!_reverse)
             throw std::logic_error("NAVMAP - WRONG PLANNING DIRECTION");
         navList path;
+        if (_dist[source.getNode()][source] == 0.0f)
+            return path;
         path.push_back(_connection[source.getNode()][source]);
         if (path.front() == nullptr)
             throw std::logic_error("NAVMAP - NO EXISTING PATH CONNECTING SOURCE AND GOAL");

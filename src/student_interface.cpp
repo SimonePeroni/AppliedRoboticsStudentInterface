@@ -13,6 +13,7 @@
 #include "rm/visibility.hpp"
 #include "rm/inflate.hpp"
 #include "nav/NavMap.hpp"
+#include "nav/pursuerEvader.hpp"
 #include "dubins/dubins.hpp"
 #include "utils/timer.hpp"
 #include "utils/MatlabPlot.hpp"
@@ -71,14 +72,14 @@ namespace student
 				  const std::vector<float> x, const std::vector<float> y, const std::vector<float> theta,
 				  std::vector<Path> &path, const std::string &config_folder)
 	{
-		const float robot_size = 0.14f;							  // Width of the robot (wheel-wheel)
-		const float collision_offset = robot_size * 0.5f;		  // Offset for obstacle inflation
-		const float visibility_offset = collision_offset * 1.3f;  // Offset for visibility graph vertices
-		const float visibility_threshold = robot_size * 0.5f;	  // Minimum distance between consecutive nodes
-		const int n_poses = 8;									  // Number of poses per node
-		const float kmax = 1 / robot_size;						  // Maximum curvature of Dubins paths
-		const int k = 50;										  // Robot free roaming parameter
-		const float step = M_PI / 32 / kmax;					  // Discretization step
+		const float robot_size = 0.14f;							 // Width of the robot (wheel-wheel)
+		const float collision_offset = robot_size * 0.5f;		 // Offset for obstacle inflation
+		const float visibility_offset = collision_offset * 1.3f; // Offset for visibility graph vertices
+		const float visibility_threshold = robot_size * 0.5f;	 // Minimum distance between consecutive nodes
+		const int n_poses = 8;									 // Number of poses per node
+		const float kmax = 1 / robot_size;						 // Maximum curvature of Dubins paths
+		const int k = 5;										 // Robot free roaming parameter
+		const float step = M_PI / 32 / kmax;					 // Discretization step
 
 		const bool enable_matlab_output = true; // Whether to generate matlab file for plotting
 		const std::string matlab_file = config_folder + "/student_interface_plot.m";
@@ -88,7 +89,7 @@ namespace student
 		std::cout << "*                  by Simone Peroni & Mario Tilocca                  *" << std::endl;
 		std::cout << "**********************************************************************" << std::endl;
 		std::cout << "Evader initial pose:  (x: " << x[0] << ", y: " << y[0] << ", yaw: " << theta[0] << ")" << std::endl;
-		std::cout << "Pursuer initial pose: (x: " << x[0] << ", y: " << y[0] << ", yaw: " << theta[0] << ")" << std::endl;
+		std::cout << "Pursuer initial pose: (x: " << x[1] << ", y: " << y[1] << ", yaw: " << theta[1] << ")" << std::endl;
 		std::cout << "Detected obstacles:   " << obstacle_list.size() << std::endl;
 		std::cout << "Detected gates:       " << gate_list.size() << std::endl;
 		if (enable_matlab_output)
@@ -158,18 +159,11 @@ namespace student
 			}
 			t.toc();
 
-			t.tic("Precomputing navigation map for pursuer (Dijkstra algorithm)...");
+			// Run game
+			t.tic("Running game...");
+			nav::navList nav_list_e, nav_list_p;
 			nav::NavMap nm_p(rm);
-			nm_p.compute(source_p);
-			t.toc();
-
-			// Get shortest path from source
-			t.tic("Acquiring best escape path...");
-			nav::navList nav_list_e = nm_e[0].planFrom(source_e);
-			t.toc();
-
-			t.tic("Intercepting evader escape path...");
-			nav::navList nav_list_p = nm_p.intercept(nav_list_e);
+			nav::runGame(nm_e, nm_p, source_e, source_p, nav_list_e, nav_list_p);
 			t.toc();
 
 			// Discretize path
@@ -179,6 +173,14 @@ namespace student
 			std::vector<Pose> discr_path_e;
 			for (const auto &connection : nav_list_e)
 			{
+				if (connection->to == connection->from)
+				{
+					discr_path_e.push_back(discr_path_e.back());
+					discr_path_e.back().s += connection->path.L;
+					delete connection;
+					continue;
+				}
+
 				dubins::discretizeCurve(connection->path, step, offset, discr_path_e);
 			}
 			path[0].setPoints(discr_path_e);
@@ -189,6 +191,14 @@ namespace student
 			std::vector<Pose> discr_path_p;
 			for (const auto &connection : nav_list_p)
 			{
+				if (connection->to == connection->from)
+				{
+					discr_path_p.push_back(discr_path_p.back());
+					discr_path_p.back().s += connection->path.L;
+					delete connection;
+					continue;
+				}
+
 				dubins::discretizeCurve(connection->path, step, offset, discr_path_p);
 			}
 			path[1].setPoints(discr_path_p);

@@ -72,12 +72,12 @@ namespace student
 				  std::vector<Path> &path, const std::string &config_folder)
 	{
 		const float robot_size = 0.14f;							  // Width of the robot (wheel-wheel)
-		const float collision_offset = robot_size / 2.0f;		  // Offset for obstacle inflation
-		const float visibility_offset = collision_offset * 1.3f; // Offset for visibility graph vertices
-		const float visibility_threshold = robot_size / 2.0f;	  // Minimum distance between consecutive nodes
+		const float collision_offset = robot_size * 0.5f;		  // Offset for obstacle inflation
+		const float visibility_offset = collision_offset * 1.3f;  // Offset for visibility graph vertices
+		const float visibility_threshold = robot_size * 0.5f;	  // Minimum distance between consecutive nodes
 		const int n_poses = 8;									  // Number of poses per node
 		const float kmax = 1 / robot_size;						  // Maximum curvature of Dubins paths
-		const int k = 50;										  // Robot free movement parameter
+		const int k = 50;										  // Robot free roaming parameter
 		const float step = M_PI / 32 / kmax;					  // Discretization step
 
 		const bool enable_matlab_output = true; // Whether to generate matlab file for plotting
@@ -173,7 +173,8 @@ namespace student
 			t.toc();
 
 			// Discretize path
-			t.tic("Discretizing path for evader...");
+			t.tic("Discretizing paths...");
+			t.tic();
 			float offset = 0.0f;
 			std::vector<Pose> discr_path_e;
 			for (const auto &connection : nav_list_e)
@@ -181,9 +182,9 @@ namespace student
 				dubins::discretizeCurve(connection->path, step, offset, discr_path_e);
 			}
 			path[0].setPoints(discr_path_e);
-			t.toc();
+			t.toc("Evader path");
 
-			t.tic("Discretizing path for pursuer...");
+			t.tic();
 			offset = 0.0f;
 			std::vector<Pose> discr_path_p;
 			for (const auto &connection : nav_list_p)
@@ -191,6 +192,7 @@ namespace student
 				dubins::discretizeCurve(connection->path, step, offset, discr_path_p);
 			}
 			path[1].setPoints(discr_path_p);
+			t.toc("Pursuer path");
 			t.toc();
 
 			if (enable_matlab_output)

@@ -4,11 +4,10 @@
 #include <deque>
 
 #include "rm/RoadMap.hpp"
+#include "nav/path.hpp"
 
 namespace nav
 {
-    typedef std::deque<rm::RoadMap::DubinsConnection const *> navList;
-
     class NavMap
     {
     private:

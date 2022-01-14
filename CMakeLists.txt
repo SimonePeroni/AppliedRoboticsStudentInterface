@@ -35,6 +35,7 @@ add_library(student SHARED
    src/nav/dijkstra.cpp
    src/nav/NavMap.cpp
    src/nav/pursuerEvader.cpp
+   src/nav/path.cpp
   #utils
    src/utils/timer.cpp
    src/utils/MatlabPlot.cpp

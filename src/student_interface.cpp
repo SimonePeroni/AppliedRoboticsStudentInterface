@@ -14,6 +14,7 @@
 #include "rm/inflate.hpp"
 #include "nav/NavMap.hpp"
 #include "nav/pursuerEvader.hpp"
+#include "nav/path.hpp"
 #include "dubins/dubins.hpp"
 #include "utils/timer.hpp"
 #include "utils/MatlabPlot.hpp"
@@ -166,45 +167,27 @@ namespace student
 			nav::runGame(nm_e, nm_p, source_e, source_p, nav_list_e, nav_list_p);
 			t.toc();
 
-			// Discretize path
+			// Discretize paths
 			t.tic("Discretizing paths...");
 			t.tic();
-			float offset = 0.0f;
 			std::vector<Pose> discr_path_e;
-			for (const auto &connection : nav_list_e)
-			{
-				if (connection->to == connection->from)
-				{
-					discr_path_e.push_back(discr_path_e.back());
-					discr_path_e.back().s += connection->path.L;
-					delete connection;
-					continue;
-				}
-
-				dubins::discretizeCurve(connection->path, step, offset, discr_path_e);
-			}
-			path[0].setPoints(discr_path_e);
+			nav::discretizePath(nav_list_e, step, discr_path_e);
 			t.toc("Evader path");
 
 			t.tic();
-			offset = 0.0f;
 			std::vector<Pose> discr_path_p;
-			for (const auto &connection : nav_list_p)
-			{
-				if (connection->to == connection->from)
-				{
-					discr_path_p.push_back(discr_path_p.back());
-					discr_path_p.back().s += connection->path.L;
-					delete connection;
-					continue;
-				}
-
-				dubins::discretizeCurve(connection->path, step, offset, discr_path_p);
-			}
-			path[1].setPoints(discr_path_p);
+			nav::discretizePath(nav_list_p, step, discr_path_p);
 			t.toc("Pursuer path");
 			t.toc();
 
+			// Truncate paths at collision point
+			t.tic("Truncating paths at collision point");
+			nav::truncatePaths(discr_path_e, discr_path_p, robot_size);
+			path[0].setPoints(discr_path_e);
+			path[1].setPoints(discr_path_p);
+			t.toc();
+
+			// Create matlab file for plotting
 			if (enable_matlab_output)
 			{
 				t.tic("Creating matlab file...");

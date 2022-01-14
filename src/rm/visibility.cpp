@@ -67,16 +67,26 @@ namespace rm
 
         for (auto &path : joinedPaths)
         {
-            float old_x = 1e10f, old_y = 1e10f;
+            float old_x = INFINITY, old_y = INFINITY;
+            int weight = 1;
             for (auto const &vertex : path)
             {
                 float x = vertex.X / scale;
                 float y = vertex.Y / scale;
-                if (std::hypotf(x - old_x, y - old_y) >= threshold)
+                if (std::hypotf(x - old_x, y - old_y) < threshold)
+                {
+                    nodes.pop_back();
+                    old_x = (weight * old_x + x) / (weight + 1);
+                    old_y = (weight * old_y + y) / (weight + 1);
+                    weight++;
+                    nodes.push_back(Point(old_x, old_y));
+                }
+                else
                 {
                     nodes.push_back(Point(x, y));
                     old_x = x;
                     old_y = y;
+                    weight = 1;
                 }
             }
         }

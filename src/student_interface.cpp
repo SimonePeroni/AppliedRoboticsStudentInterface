@@ -73,7 +73,7 @@ namespace student
 	{
 		const float robot_size = 0.14f;							  // Width of the robot (wheel-wheel)
 		const float collision_offset = robot_size / 2.0f;		  // Offset for obstacle inflation
-		const float visibility_offset = collision_offset * 1.25f; // Offset for visibility graph vertices
+		const float visibility_offset = collision_offset * 1.3f; // Offset for visibility graph vertices
 		const float visibility_threshold = robot_size / 2.0f;	  // Minimum distance between consecutive nodes
 		const int n_poses = 8;									  // Number of poses per node
 		const float kmax = 1 / robot_size;						  // Maximum curvature of Dubins paths

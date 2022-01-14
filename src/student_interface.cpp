@@ -71,14 +71,14 @@ namespace student
 				  const std::vector<float> x, const std::vector<float> y, const std::vector<float> theta,
 				  std::vector<Path> &path, const std::string &config_folder)
 	{
-		const float robot_size = 0.14f;							 // Width of the robot (wheel-wheel)
-		const float collision_offset = robot_size / 2.0f;		 // Offset for obstacle inflation
+		const float robot_size = 0.14f;							  // Width of the robot (wheel-wheel)
+		const float collision_offset = robot_size / 2.0f;		  // Offset for obstacle inflation
 		const float visibility_offset = collision_offset * 1.25f; // Offset for visibility graph vertices
-		const float visibility_threshold = robot_size / 2.0f;	 // Minimum distance between consecutive nodes
-		const int n_poses = 8;									 // Number of poses per node
-		const float kmax = 1 / robot_size;						 // Maximum curvature of Dubins paths
-		const int k = 50;										 // Robot free movement parameter
-		const float step = M_PI / 32 / kmax;					 // Discretization step
+		const float visibility_threshold = robot_size / 2.0f;	  // Minimum distance between consecutive nodes
+		const int n_poses = 8;									  // Number of poses per node
+		const float kmax = 1 / robot_size;						  // Maximum curvature of Dubins paths
+		const int k = 50;										  // Robot free movement parameter
+		const float step = M_PI / 32 / kmax;					  // Discretization step
 
 		const bool enable_matlab_output = true; // Whether to generate matlab file for plotting
 		const std::string matlab_file = config_folder + "/student_interface_plot.m";
@@ -144,7 +144,26 @@ namespace student
 			}
 			gate_x /= gate_list[0].size();
 			gate_y /= gate_list[0].size();
-			auto &goal = rm.addGoalPose(Point(gate_x, gate_y), M_PI, k, kmax, infObstacles, borders);
+			float gate_th;
+			float diag_sw_ne = (borders[2].y - borders[0].y) / (borders[2].x - borders[0].x);
+			float diag_nw_se = (borders[1].y - borders[3].y) / (borders[1].x - borders[3].x);
+			float diag_sw_gate = (gate_y - borders[0].y) / (gate_x - borders[0].x);
+			float diag_nw_gate = (gate_y - borders[3].y) / (gate_x - borders[3].x);
+			if (diag_nw_gate > diag_nw_se)
+			{
+				if (diag_sw_gate > diag_sw_ne)
+					gate_th = M_PI_2;
+				else
+					gate_th = 0.0f;
+			}
+			else
+			{
+				if (diag_sw_gate > diag_sw_ne)
+					gate_th = M_PI;
+				else
+					gate_th = M_PI + M_PI_2;
+			}
+			auto &goal = rm.addGoalPose(Point(gate_x, gate_y), gate_th, k, kmax, infObstacles, borders);
 			t.toc();
 
 			// Precompute navigation weights
@@ -203,12 +222,14 @@ namespace student
 				t.toc();
 			}
 
-			std::cout << std::endl << "Algorithm terminated succesfully" << std::endl;
+			std::cout << std::endl
+					  << "Algorithm terminated succesfully" << std::endl;
 			std::cout << "**********************************************************************" << std::endl;
 		}
 		catch (const std::logic_error &e)
 		{
-			std::cout << std::endl << "Algorithm stopped! Exception raised: " << e.what() << std::endl;
+			std::cout << std::endl
+					  << "Algorithm stopped! Exception raised: " << e.what() << std::endl;
 			std::cout << "**********************************************************************" << std::endl;
 			return false;
 		}

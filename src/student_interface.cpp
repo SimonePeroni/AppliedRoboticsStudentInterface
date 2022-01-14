@@ -134,16 +134,28 @@ namespace student
 			t.toc();
 
 			// Add gate position
-			t.tic("Adding goal pose...");
-			float gate_x, gate_y, gate_th;
-			rm::getGatePose(gate_list[0], borders, gate_x, gate_y, gate_th);
-			auto &goal = rm.addGoalPose(Point(gate_x, gate_y), gate_th, k, kmax, infObstacles, borders);
+			t.tic("Adding goal poses...");
+			std::vector<rm::RoadMap::Node::Orientation *> goal;
+			for (size_t i = 0; i < gate_list.size(); i++)
+			{
+				t.tic();
+				float gate_x, gate_y, gate_th;
+				rm::getGatePose(gate_list[i], borders, gate_x, gate_y, gate_th);
+				goal.push_back(&rm.addGoalPose(Point(gate_x, gate_y), gate_th, k, kmax, infObstacles, borders));
+				t.toc(std::to_string(i + 1) + "/" + std::to_string(gate_list.size()));
+			}
 			t.toc();
 
 			// Precompute navigation weights
-			t.tic("Precomputing navigation map for evader (Dijkstra algorithm)...");
-			nav::NavMap nm_e(rm);
-			nm_e.computeReverse(goal);
+			t.tic("Precomputing navigation maps for evader (Dijkstra algorithm)...");
+			std::vector<nav::NavMap> nm_e;
+			for (size_t i = 0; i < goal.size(); i++)
+			{
+				t.tic();
+				nm_e.push_back(nav::NavMap(rm));
+				nm_e.back().computeReverse(*goal[i]);
+				t.toc(std::to_string(i + 1) + "/" + std::to_string(goal.size()));
+			}
 			t.toc();
 
 			t.tic("Precomputing navigation map for pursuer (Dijkstra algorithm)...");
@@ -153,7 +165,7 @@ namespace student
 
 			// Get shortest path from source
 			t.tic("Acquiring best escape path...");
-			nav::navList nav_list_e = nm_e.planFrom(source_e);
+			nav::navList nav_list_e = nm_e[0].planFrom(source_e);
 			t.toc();
 
 			t.tic("Intercepting evader escape path...");

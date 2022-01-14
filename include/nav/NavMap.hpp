@@ -37,7 +37,6 @@ namespace nav
         navList intercept(const navList &path, float offset = 0.0f) const;
 
         bool isReverse() const;
-        void setReverse(bool reverse);
         float getValue(const rm::RoadMap::Node::Orientation &pose) const;
         float getValue(const rm::RoadMap::Node &node) const;
     };

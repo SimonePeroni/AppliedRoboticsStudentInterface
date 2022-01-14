@@ -11,12 +11,12 @@ namespace nav
     NavMap::NavMap(const rm::RoadMap &roadmap) : _rm(roadmap)
     {
         _need_computing = true;
+        _reverse = false;
     }
 
     void NavMap::compute(const rm::RoadMap::Node::Orientation &source)
     {
-        if (_reverse)
-            setReverse(false);
+        _reverse = false;
         reset();
 
         typedef std::pair<float, const rm::RoadMap::Node::Orientation &> dist_pose;
@@ -57,13 +57,11 @@ namespace nav
         }
 
         _need_computing = false;
-        _reverse = false;
     }
 
     void NavMap::computeReverse(const rm::RoadMap::Node::Orientation &goal)
     {
-        if (!_reverse)
-            setReverse(true);
+        _reverse = true;
         reset();
 
         typedef std::pair<float, const rm::RoadMap::Node::Orientation &> dist_pose;
@@ -104,7 +102,6 @@ namespace nav
         }
 
         _need_computing = false;
-        _reverse = true;
     }
 
     void NavMap::reset()
@@ -128,13 +125,6 @@ namespace nav
         return _reverse;
     }
 
-    void NavMap::setReverse(bool reverse)
-    {
-        if (reverse == _reverse)
-            return;
-        _reverse = !_reverse;
-    }
-
     float NavMap::getValue(const rm::RoadMap::Node::Orientation &pose) const
     {
         if (_need_computing)
@@ -144,12 +134,12 @@ namespace nav
 
     float NavMap::getValue(const rm::RoadMap::Node &node) const
     {
+        float best = _reverse ? -INFINITY : INFINITY;
         if (_need_computing)
-            return _reverse ? -INFINITY : INFINITY;
-        float best = INFINITY;
+            return best;
         for (size_t i = 0; i < node.getPosesCount(); i++)
         {
-            if (_dist[node][i] < best)
+            if (_reverse ? _dist[node][i] > best : _dist[node][i] < best)
                 best = _dist[node][i];
         }
         return best;
@@ -163,8 +153,7 @@ namespace nav
         for (const auto &connection : path)
         {
             running_length += connection->path.L;
-            float advantage = running_length - getValue(connection->to->getNode());
-            if (advantage >= 0.0f)
+            if (getValue(connection->to->getNode()) <= running_length)
                 return planTo(connection->to->getNode());
         }
         // If there was no chance of intercepting, go to last node

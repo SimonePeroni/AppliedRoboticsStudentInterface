@@ -56,6 +56,7 @@ int main()
     //auto &goal = rm.getNode(rm.getNodeCount() - 1).getPose(0);
 
     auto &source = rm.addStartPose(Point(0.5, 0.9), 0.0f, 50, kmax, infObstacles, infBorders);
+    auto &source2 = rm.addStartPose(Point(0.7, 0.6), 0.0f, 50, kmax, infObstacles, infBorders);
     auto &goal = rm.addGoalPose(Point(0.1, 0.15), 0.0f, 50, kmax, infObstacles, infBorders);
 
     nav::NavMap nm(rm);
@@ -65,6 +66,10 @@ int main()
     std::cout << "Path found!" << std::endl;
     std::cout << "Traversing " << path.size() - 1 << " intermediate nodes." << std::endl;
 
+    nav::NavMap nm2(rm);
+    nm2.compute(source2);
+    nav::navList path2 = nm2.intercept(path);
+
     float d_offset = 0.0f;
     float step = 0.01f;
     std::vector<Pose> discr_path;
@@ -73,6 +78,13 @@ int main()
         dubins::discretizeCurve(connection->path, step, d_offset, discr_path);
     }
     utils::MatlabPlot mp("plot_navmap_path.m");
+    d_offset = 0.0f;
+    std::vector<Pose> discr_path2;
+    for (const auto &connection : path2)
+    {
+        dubins::discretizeCurve(connection->path, step, d_offset, discr_path2);
+    }
     mp.plotGraph(rm);
     mp.plotDiscretePath(discr_path);
+    mp.plotDiscretePath(discr_path2);
 }

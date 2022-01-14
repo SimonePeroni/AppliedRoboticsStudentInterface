@@ -203,8 +203,8 @@ namespace rm
 
     void getGatePose(const Polygon &gate, const Polygon &borders, float &x, float &y, float &theta)
     {
-        float x = 0.0f;
-        float y = 0.0f;
+        x = 0.0f;
+        y = 0.0f;
         for (auto &p : gate)
         {
             x += p.x;
@@ -212,7 +212,6 @@ namespace rm
         }
         x /= gate.size();
         y /= gate.size();
-        float theta;
         // Assuming borders given in the order sw-se-ne-nw
         float diag_sw_ne = (borders[2].y - borders[0].y) / (borders[2].x - borders[0].x);
         float diag_nw_se = (borders[1].y - borders[3].y) / (borders[1].x - borders[3].x);

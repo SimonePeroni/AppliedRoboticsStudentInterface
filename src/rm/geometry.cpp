@@ -200,4 +200,37 @@ namespace rm
             theta += p;
         return theta <= th1;
     }
+
+    void getGatePose(const Polygon &gate, const Polygon &borders, float &x, float &y, float &theta)
+    {
+        float x = 0.0f;
+        float y = 0.0f;
+        for (auto &p : gate)
+        {
+            x += p.x;
+            y += p.y;
+        }
+        x /= gate.size();
+        y /= gate.size();
+        float theta;
+        // Assuming borders given in the order sw-se-ne-nw
+        float diag_sw_ne = (borders[2].y - borders[0].y) / (borders[2].x - borders[0].x);
+        float diag_nw_se = (borders[1].y - borders[3].y) / (borders[1].x - borders[3].x);
+        float diag_sw_gate = (y - borders[0].y) / (x - borders[0].x);
+        float diag_nw_gate = (y - borders[3].y) / (x - borders[3].x);
+        if (diag_nw_gate > diag_nw_se)
+        {
+            if (diag_sw_gate > diag_sw_ne)
+                theta = M_PI_2;
+            else
+                theta = 0.0f;
+        }
+        else
+        {
+            if (diag_sw_gate > diag_sw_ne)
+                theta = M_PI;
+            else
+                theta = M_PI + M_PI_2;
+        }
+    }
 }

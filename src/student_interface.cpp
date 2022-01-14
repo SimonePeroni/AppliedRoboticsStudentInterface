@@ -135,34 +135,8 @@ namespace student
 
 			// Add gate position
 			t.tic("Adding goal pose...");
-			float gate_x = 0.0f;
-			float gate_y = 0.0f;
-			for (auto &p : gate_list[0])
-			{
-				gate_x += p.x;
-				gate_y += p.y;
-			}
-			gate_x /= gate_list[0].size();
-			gate_y /= gate_list[0].size();
-			float gate_th;
-			float diag_sw_ne = (borders[2].y - borders[0].y) / (borders[2].x - borders[0].x);
-			float diag_nw_se = (borders[1].y - borders[3].y) / (borders[1].x - borders[3].x);
-			float diag_sw_gate = (gate_y - borders[0].y) / (gate_x - borders[0].x);
-			float diag_nw_gate = (gate_y - borders[3].y) / (gate_x - borders[3].x);
-			if (diag_nw_gate > diag_nw_se)
-			{
-				if (diag_sw_gate > diag_sw_ne)
-					gate_th = M_PI_2;
-				else
-					gate_th = 0.0f;
-			}
-			else
-			{
-				if (diag_sw_gate > diag_sw_ne)
-					gate_th = M_PI;
-				else
-					gate_th = M_PI + M_PI_2;
-			}
+			float gate_x, gate_y, gate_th;
+			rm::getGatePose(gate_list[0], borders, gate_x, gate_y, gate_th);
 			auto &goal = rm.addGoalPose(Point(gate_x, gate_y), gate_th, k, kmax, infObstacles, borders);
 			t.toc();
 

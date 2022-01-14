@@ -85,4 +85,6 @@ namespace rm
     bool isRightOfOrOn(const Point &p, const Segment &s);
 
     bool inAngleRange(float theta, float th0, float th1, bool clockwise = false);
+
+    void getGatePose(const Polygon &gate, const Polygon &borders, float &x, float &y, float &theta);
 }

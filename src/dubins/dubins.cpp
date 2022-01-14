@@ -4,7 +4,6 @@
 #include <math.h>
 #include <algorithm>
 #include <cstdlib>
-#include <limits>
 #include <stdexcept>
 
 #include "dubins/dubins.hpp"
@@ -92,10 +91,12 @@ namespace dubins
 	{
 		float invK = 1.0 / sc_kmax;
 		float C = cos(sc_thf) - cos(sc_th0);
-		float S = 2.0 * sc_kmax + sin(sc_th0) - sin(sc_thf);
+		float sin_sc_th0 = sin(sc_th0);
+		float sin_sc_thf = sin(sc_thf);
+		float S = 2.0 * sc_kmax + sin_sc_th0 - sin_sc_thf;
 		float temp1 = atan2(C, S);
 		sc_s1 = invK * mod2pi(temp1 - sc_th0);
-		float temp2 = 2.0 + 4.0 * pow(sc_kmax, 2) - 2 * cos(sc_th0 - sc_thf) + 4 * sc_kmax * (sin(sc_th0) - sin(sc_thf));
+		float temp2 = 2.0 + 4.0 * sc_kmax * sc_kmax - 2 * cos(sc_th0 - sc_thf) + 4 * sc_kmax * (sin_sc_th0 - sin_sc_thf);
 		if (temp2 < 0)
 		{
 			sc_s1 = 0;
@@ -115,10 +116,12 @@ namespace dubins
 	{
 		float invK = 1.0 / sc_kmax;
 		float C = cos(sc_th0) - cos(sc_thf);
-		float S = 2.0 * sc_kmax - sin(sc_th0) + sin(sc_thf);
+		float sin_sc_th0 = sin(sc_th0);
+		float sin_sc_thf = sin(sc_thf);
+		float S = 2.0 * sc_kmax - sin_sc_th0 + sin_sc_thf;
 		float temp1 = atan2(C, S);
 		sc_s1 = invK * mod2pi(sc_th0 - temp1);
-		float temp2 = 2.0 + 4.0 * pow(sc_kmax, 2) - 2 * cos(sc_th0 - sc_thf) - 4 * sc_kmax * (sin(sc_th0) - sin(sc_thf));
+		float temp2 = 2.0 + 4.0 * sc_kmax * sc_kmax - 2 * cos(sc_th0 - sc_thf) - 4 * sc_kmax * (sin_sc_th0 - sin_sc_thf);
 		if (temp2 < 0)
 		{
 			sc_s1 = 0;
@@ -138,9 +141,11 @@ namespace dubins
 	{
 		float invK = 1.0 / sc_kmax;
 		float C = cos(sc_th0) + cos(sc_thf);
-		float S = 2.0 * sc_kmax + sin(sc_th0) + sin(sc_thf);
+		float sin_sc_th0 = sin(sc_th0);
+		float sin_sc_thf = sin(sc_thf);
+		float S = 2.0 * sc_kmax + sin_sc_th0 + sin_sc_thf;
 		float temp1 = atan2(-C, S);
-		float temp3 = 4.0 * pow(sc_kmax, 2) - 2.0 + 2.0 * cos(sc_th0 - sc_thf) + 4.0 * sc_kmax * (sin(sc_th0) + sin(sc_thf));
+		float temp3 = 4.0 * sc_kmax * sc_kmax - 2.0 + 2.0 * cos(sc_th0 - sc_thf) + 4.0 * sc_kmax * (sin_sc_th0 + sin_sc_thf);
 
 		if (temp3 < 0)
 		{
@@ -163,9 +168,11 @@ namespace dubins
 	{
 		float invK = 1.0 / sc_kmax;
 		float C = cos(sc_th0) + cos(sc_thf);
-		float S = 2.0 * sc_kmax - sin(sc_th0) - sin(sc_thf);
+		float sin_sc_th0 = sin(sc_th0);
+		float sin_sc_thf = sin(sc_thf);
+		float S = 2.0 * sc_kmax - sin_sc_th0 - sin_sc_thf;
 		float temp1 = atan2(C, S);
-		float temp3 = 4.0 * pow(sc_kmax, 2) - 2.0 + 2.0 * cos(sc_th0 - sc_thf) - 4.0 * sc_kmax * (sin(sc_th0) + sin(sc_thf));
+		float temp3 = 4.0 * sc_kmax * sc_kmax - 2.0 + 2.0 * cos(sc_th0 - sc_thf) - 4.0 * sc_kmax * (sin_sc_th0 + sin_sc_thf);
 		if (temp3 < 0)
 		{
 			sc_s1 = 0;
@@ -187,9 +194,11 @@ namespace dubins
 	{
 		float invK = 1.0 / sc_kmax;
 		float C = cos(sc_th0) - cos(sc_thf);
-		float S = 2.0 * sc_kmax - sin(sc_th0) + sin(sc_thf);
+		float sin_sc_th0 = sin(sc_th0);
+		float sin_sc_thf = sin(sc_thf);
+		float S = 2.0 * sc_kmax - sin_sc_th0 + sin_sc_thf;
 		float temp1 = atan2(C, S);
-		float temp2 = 0.125 * (6.0 - 4.0 * pow(sc_kmax, 2) + 2.0 * cos(sc_th0 - sc_thf) + 4.0 * sc_kmax * (sin(sc_th0) - sin(sc_thf)));
+		float temp2 = 0.125 * (6.0 - 4.0 * sc_kmax * sc_kmax + 2.0 * cos(sc_th0 - sc_thf) + 4.0 * sc_kmax * (sin_sc_th0 - sin_sc_thf));
 		if (abs(temp2) > 1.0)
 		{
 			sc_s1 = 0;
@@ -210,12 +219,13 @@ namespace dubins
 	{
 		float invK = 1.0 / sc_kmax;
 		float C = cos(sc_thf) - cos(sc_th0);
-		float S = 2.0 * sc_kmax + sin(sc_th0) - sin(sc_thf);
+		float sin_sc_th0 = sin(sc_th0);
+		float sin_sc_thf = sin(sc_thf);
+		float S = 2.0 * sc_kmax + sin_sc_th0 - sin_sc_thf;
 		float temp1 = atan2(C, S);
-		float temp2 = 0.125 * (6.0 - 4.0 * pow(sc_kmax, 2) + 2.0 * cos(sc_th0 - sc_thf) - 4.0 * sc_kmax * (sin(sc_th0) - sin(sc_thf)));
+		float temp2 = 0.125 * (6.0 - 4.0 * sc_kmax * sc_kmax + 2.0 * cos(sc_th0 - sc_thf) - 4.0 * sc_kmax * (sin_sc_th0 - sin_sc_thf));
 		if (abs(temp2) > 1.0)
 		{
-
 			sc_s1 = 0;
 			sc_s2 = 0;
 			sc_s3 = 0;
@@ -239,8 +249,10 @@ namespace dubins
 		ptr.start.theta = start.theta;
 		ptr.k = k;
 		ptr.s = s;
-		ptr.end.x = start.x + s * sinc(k * s / 2.0) * cos(start.theta + k * s / 2.0);
-		ptr.end.y = start.y + s * sinc(k * s / 2.0) * sin(start.theta + k * s / 2.0);
+		float ks_2 = k * s * 0.5f;
+		float sinc_ks_2 = sinc(ks_2);
+		ptr.end.x = start.x + s * sinc_ks_2 * cos(start.theta + ks_2);
+		ptr.end.y = start.y + s * sinc_ks_2 * sin(start.theta + ks_2);
 		ptr.end.theta = mod2pi(start.theta + k * s);
 	}
 
@@ -280,7 +292,7 @@ namespace dubins
 			{1, -1, 1}}; //LRL
 
 		int pidx = -1;
-		double L = numeric_limits<double>::infinity(); // Infinite value
+		double L = INFINITY; // Infinite value
 		bool ctrl;
 		float s1, s2, s3;
 		float sc_s1, sc_s2, sc_s3;
@@ -346,8 +358,10 @@ namespace dubins
 	Pose2D poseOnArc(float s, Pose2D p0, float k)
 	{
 		Pose2D out;
-		out.x = p0.x + s * sinc(.5f * k * s) * cos(p0.theta + .5f * k * s);
-		out.y = p0.y + s * sinc(.5f * k * s) * sin(p0.theta + .5f * k * s);
+		float ks_2 = .5f * k * s;
+		float sinc_ks_2 = sinc(ks_2);
+		out.x = p0.x + s * sinc_ks_2 * cos(p0.theta + ks_2);
+		out.y = p0.y + s * sinc_ks_2 * sin(p0.theta + ks_2);
 		out.theta = mod2pi(p0.theta + k * s);
 		return out;
 	}

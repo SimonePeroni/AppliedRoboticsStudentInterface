@@ -39,7 +39,7 @@ namespace nav
         /**
          * @brief NavMap constructor.
          * 
-         * @param roadmap Associated RoadMap object.
+         * @param[in] roadmap Associated RoadMap object.
          */
         NavMap(const rm::RoadMap &roadmap);
 
@@ -49,7 +49,7 @@ namespace nav
          * The algorithm explores the RoadMap from the given source pose and saves the shortest distances to every other pose in the RoadMap, 
          * as well as the last connection of the best path from source to every other pose. This allows for backward reconstruction of the full path.
          * 
-         * @param source Source pose from which exploration is started
+         * @param[in] source Source pose from which exploration is started
          * 
          * @see planTo()
          * @see computeReverse()
@@ -62,7 +62,7 @@ namespace nav
          * The algorithm explores the RoadMap running every connection backwards from the given goal pose and saves the shortest distances from every other pose in the RoadMap, 
          * as well as the first connection of the best path to goal from every other pose. This allows for forward reconstruction of the full path.
          * 
-         * @param source Goal pose from which backward exploration is started
+         * @param[in] source Goal pose from which backward exploration is started
          * 
          * @see planFrom()
          * @see compute()
@@ -78,7 +78,7 @@ namespace nav
         /**
          * @brief Plan the shortest path to a given position, regardless of the orientation. Requires forward pre-computation.
          * 
-         * @param goal  Goal position
+         * @param[in] goal  Goal position
          * @return      Planned path
          * 
          * @see compute()
@@ -89,7 +89,7 @@ namespace nav
         /**
          * @brief Plan the shortest path to a given pose. Requires forward pre-computation.
          * 
-         * @param goal  Goal pose
+         * @param[in] goal  Goal pose
          * @return      Planned path
          * 
          * @see compute()
@@ -100,7 +100,7 @@ namespace nav
         /**
          * @brief Plan the shortest path from a given source. Requires reverse pre-computation.
          * 
-         * @param source    Source pose
+         * @param[in] source    Source pose
          * @return          Planned path
          * 
          * @see compute()
@@ -113,8 +113,8 @@ namespace nav
          * 
          * If interception is not possible, it plans the shortest path to the last position of the given path.
          * 
-         * @param path      Path to be intercepted
-         * @param offset    From which length of the given path the actual path should start at present.
+         * @param[in] path      Path to be intercepted
+         * @param[in] offset    From which length of the given path the actual path should start at present.
          * @return navList 
          *
          * @see compute()
@@ -134,7 +134,7 @@ namespace nav
         /**
          * @brief Get the pre-computed value stored for a given pose.
          * 
-         * @param pose  Pose
+         * @param[in] pose  Pose
          * @return      Pre-computed value
          * 
          * @see compute()
@@ -144,7 +144,7 @@ namespace nav
         /**
          * @brief Get the smallest pre-computed value stored for a given position.
          * 
-         * @param node  Position
+         * @param[in] node  Position
          * @return      Best pre-computed value
          * 
          * @see compute()

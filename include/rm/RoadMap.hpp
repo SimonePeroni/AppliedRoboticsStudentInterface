@@ -63,19 +63,19 @@ namespace rm
                 /**
                  * @brief Construct a new Orientation object.
                  * 
-                 * @param parent    Pointer to the Node object this pose belongs to
-                 * @param id        Index of this Pose object in the pose list stored in the parent Node object
-                 * @param theta     Angle of the pose with respect to the x-axis, measured counter-clockwise
+                 * @param[in] parent    Pointer to the Node object this pose belongs to
+                 * @param[in] id        Index of this Pose object in the pose list stored in the parent Node object
+                 * @param[in] theta     Angle of the pose with respect to the x-axis, measured counter-clockwise
                  */
                 Orientation(Node *parent, size_t id, float theta);
 
                 /**
                  * @brief Try to build a connection between two poses by evaluating a Dubins path.
                  * 
-                 * @param other     Pose to connect to
-                 * @param kmax      Maximum curvature of Dubins curves
-                 * @param obstacles List of obstacles to perform collision check when evaluating the Dubins path
-                 * @param borders   Borders of the arena to perform collision check when evaluating the Dubins path
+                 * @param[in] other     Pose to connect to
+                 * @param[in] kmax      Maximum curvature of Dubins curves
+                 * @param[in] obstacles List of obstacles to perform collision check when evaluating the Dubins path
+                 * @param[in] borders   Borders of the arena to perform collision check when evaluating the Dubins path
                  * @return          true if a feasible path was found, false otherwise
                  */
                 bool connect(Orientation &other, float const &kmax, const std::vector<Polygon> &obstacles, const Polygon &borders);
@@ -111,7 +111,7 @@ namespace rm
                 /**
                  * @brief       Get a connection starting from this pose by its index.
                  * 
-                 * @param index Index of the connection in the connection list stored in the pose
+                 * @param[in] index Index of the connection in the connection list stored in the pose
                  * @return      Reference to the connection at the given index
                  */
                 rm::RoadMap::DubinsConnection &getConnection(size_t index);
@@ -119,7 +119,7 @@ namespace rm
                 /**
                  * @brief       Get a connection starting from this pose by its index.
                  * 
-                 * @param index Index of the connection in the connection list stored in the pose
+                 * @param[in] index Index of the connection in the connection list stored in the pose
                  * @return      Read-only reference to the connection at the given index
                  */
                 const rm::RoadMap::DubinsConnection &getConnection(size_t index) const;
@@ -134,7 +134,7 @@ namespace rm
                 /**
                  * @brief       Get a connection leading to this pose by its index.
                  * 
-                 * @param index Index of the connection in the connection list stored in the pose
+                 * @param[in] index Index of the connection in the connection list stored in the pose
                  * @return      Read-only reference to the connection at the given index
                  */
                 const rm::RoadMap::DubinsConnection &getFromConnection(size_t index) const;
@@ -158,9 +158,9 @@ namespace rm
             /**
              * @brief           Construct a new Node object.
              * 
-             * @param parent    Pointer to the RoadMap object this pose belongs to
-             * @param id        Index of this Node object in the node list stored in the parent RoadMap object
-             * @param pos       2-dimensional position of the node
+             * @param[in] parent    Pointer to the RoadMap object this pose belongs to
+             * @param[in] id        Index of this Node object in the node list stored in the parent RoadMap object
+             * @param[in] pos       2-dimensional position of the node
              */
             Node(RoadMap *parent, node_id id, Point pos);
 
@@ -195,7 +195,7 @@ namespace rm
             /**
              * @brief       Get a Pose object by its ID.
              * 
-             * @param index ID of the Pose object
+             * @param[in] index ID of the Pose object
              * @return      Reference to the Pose object at given index
              */
             Orientation &getPose(size_t index);
@@ -203,7 +203,7 @@ namespace rm
             /**
              * @brief       Get a Pose object by its ID.
              * 
-             * @param index ID of the Pose object
+             * @param[in] index ID of the Pose object
              * @return      Read-only reference to the Pose object at given index
              */
             const Orientation &getPose(size_t index) const;
@@ -218,7 +218,7 @@ namespace rm
             /**
              * @brief Get a connected node by its index.
              * 
-             * @param index Index of the connected node in the connection list
+             * @param[in] index Index of the connected node in the connection list
              * @return Reference to the Node object at given index in the connection list
              */
             Node &getConnected(size_t index);
@@ -232,7 +232,7 @@ namespace rm
             /**
              * @brief Add a pose to this Node object.
              * 
-             * @param theta Angle of the pose with respect to the x-axis, measured counter-clockwise
+             * @param[in] theta Angle of the pose with respect to the x-axis, measured counter-clockwise
              * @return      ID of the newly created pose
              */
             size_t addPose(float theta);
@@ -247,7 +247,7 @@ namespace rm
             /**
              * @brief Connect this Node object to another Node object in the base directed graph of the RoadMap.
              * 
-             * @param to    ID of the Node object this node should be connected to
+             * @param[in] to    ID of the Node object this node should be connected to
              * @return      true if a new connection was created, false otherwise
              */
             bool connectTo(node_id to);
@@ -273,9 +273,9 @@ namespace rm
             /**
              * @brief Construct a new DubinsConnection object
              * 
-             * @param from  Pointer to the starting pose
-             * @param to    Pointer to the destination pose
-             * @param path  Dubins path that connects the starting pose to the destination pose
+             * @param[in] from  Pointer to the starting pose
+             * @param[in] to    Pointer to the destination pose
+             * @param[in] path  Dubins path that connects the starting pose to the destination pose
              */
             inline DubinsConnection(Node::Orientation *from, Node::Orientation *to,
                                     dubins::DubinsCurve path) : from(from), to(to), path(path) {}
@@ -288,7 +288,7 @@ namespace rm
         /**
          * @brief Add a positional node to the RoadMap.
          * 
-         * @param pos   Position of the node
+         * @param[in] pos   Position of the node
          * @return      ID of the newly created Node object
          */
         node_id addNode(Point pos);
@@ -296,12 +296,12 @@ namespace rm
         /**
          * @brief Add a positional node and dedicated pose for the starting point of a robot.
          * 
-         * @param pos       Position of the start point
-         * @param angle     Angle of the start pose with respect to the x-axis, measured counter-clockwise
-         * @param k         Number of closest nodes the start pose should be connected to
-         * @param kmax      Maximum curvature of dubins paths
-         * @param obstacles Obstacles for collision checking
-         * @param borders   Borders for collision checking
+         * @param[in] pos       Position of the start point
+         * @param[in] angle     Angle of the start pose with respect to the x-axis, measured counter-clockwise
+         * @param[in] k         Number of closest nodes the start pose should be connected to
+         * @param[in] kmax      Maximum curvature of dubins paths
+         * @param[in] obstacles Obstacles for collision checking
+         * @param[in] borders   Borders for collision checking
          * @return          Reference to the created pose
          */
         Node::Orientation &addStartPose(Point pos, float angle, int k, float kmax, const std::vector<Polygon> &obstacles, const Polygon &borders);
@@ -309,12 +309,12 @@ namespace rm
         /**
          * @brief Add a positional node and dedicated pose for the goal point of a robot.
          * 
-         * @param pos       Position of the goal point
-         * @param angle     Angle of the goal pose with respect to the x-axis, measured counter-clockwise
-         * @param k         Number of closest nodes the start pose should be connected to
-         * @param kmax      Maximum curvature of dubins paths
-         * @param obstacles Obstacles for collision checking
-         * @param borders   Borders for collision checking
+         * @param[in] pos       Position of the goal point
+         * @param[in] angle     Angle of the goal pose with respect to the x-axis, measured counter-clockwise
+         * @param[in] k         Number of closest nodes the start pose should be connected to
+         * @param[in] kmax      Maximum curvature of dubins paths
+         * @param[in] obstacles Obstacles for collision checking
+         * @param[in] borders   Borders for collision checking
          * @return          Reference to the created pose
          */
         Node::Orientation &addGoalPose(Point pos, float angle, int k, float kmax, const std::vector<Polygon> &obstacles, const Polygon &borders);
@@ -322,8 +322,8 @@ namespace rm
         /**
          * @brief Connect two Node objects in the base directed graph of the RoadMap.
          * 
-         * @param fromID    ID of the starting Node object
-         * @param toID      ID of the destination Node object
+         * @param[in] fromID    ID of the starting Node object
+         * @param[in] toID      ID of the destination Node object
          * @return          true if a new edge was created, false otherwise
          */
         bool connect(node_id fromID, node_id toID);
@@ -337,10 +337,10 @@ namespace rm
          * checked whether the path leads to collision with obtacles or with the arena borders. The feasible paths are added to
          * the navigation graph, which can be explored by checking the connections of each pose.
          * 
-         * @param orientationsPerNode   Number of poses to be created on each positional node
-         * @param kmax                  Maximum curvature of Dubins paths
-         * @param obstacles             Obstacles to check collision against when computing Dubins paths
-         * @param borders               Borders of the arena to check collision against when computing Dubins paths
+         * @param[in] orientationsPerNode   Number of poses to be created on each positional node
+         * @param[in] kmax                  Maximum curvature of Dubins paths
+         * @param[in] obstacles             Obstacles to check collision against when computing Dubins paths
+         * @param[in] borders               Borders of the arena to check collision against when computing Dubins paths
          * @return                      Number of Dubins paths that are created in the process
          */
         unsigned long build(unsigned int orientationsPerNode, float const &kmax, const std::vector<Polygon> &obstacles, const Polygon &borders);
@@ -355,7 +355,7 @@ namespace rm
         /**
          * @brief Get a Node object by its ID.
          * 
-         * @param id    ID of the Node object
+         * @param[in] id    ID of the Node object
          * @return      Reference to the Node object with given ID
          */
         Node &getNode(node_id id);
@@ -363,7 +363,7 @@ namespace rm
         /**
          * @brief Get a Node object by its ID.
          * 
-         * @param id    ID of the Node object
+         * @param[in] id    ID of the Node object
          * @return      Read-only reference to the Node object with given ID
          */
         const Node &getNode(node_id id) const;
@@ -371,9 +371,9 @@ namespace rm
         /**
          * @brief Find the k-closest nodes to a given position.
          * 
-         * @param pos   Position
-         * @param k     Number of closest points
-         * @param skip  ID of node that should be skipped in the search
+         * @param[in] pos   Position
+         * @param[in] k     Number of closest points
+         * @param[in] skip  ID of node that should be skipped in the search
          * @return      Vector of closest nodes IDs
          */
         std::vector<node_id> findKClosest(Point pos, int k, node_id skip = -1);

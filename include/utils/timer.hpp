@@ -28,14 +28,14 @@ namespace utils
         /**
          * @brief Create a new scope, start a timer and print an optional message.
          * 
-         * @param msg Optional: Message to display
+         * @param[in] msg Optional: Message to display
          */
         void tic(std::string msg = "");
 
         /**
          * @brief Stop the timer of the inner-most scope and display an optional message along with the duration in milliseconds.
          * 
-         * @param msg Optional: Message to display before duration. If empty, the duration is not displayed
+         * @param[in] msg Optional: Message to display before duration. If empty, the duration is not displayed
          */
         void toc(std::string msg = "DONE");
 

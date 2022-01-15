@@ -25,18 +25,18 @@ namespace nav
     /**
      * @brief Discretize a navigation path. Supports wait connections.
      * 
-     * @param nav_list      Navigation path to be discretized
-     * @param step          Discretization step
-     * @param discr_path    Out: Discretized path
+     * @param[in]  nav_list      Navigation path to be discretized
+     * @param[in]  step          Discretization step
+     * @param[out] discr_path    Out: Discretized path
      */
     void discretizePath(const navList &nav_list, float step, std::vector<Pose> &discr_path);
 
     /**
      * @brief Truncate two navigation paths at the collision point.
      * 
-     * @param discr_path1   First discretized path
-     * @param discr_path2   Second discretized path
-     * @param robot_size    Size of the robot
+     * @param[in,out] discr_path1   First discretized path
+     * @param[in,out] discr_path2   Second discretized path
+     * @param[in]     robot_size    Size of the robot
      */
     void truncatePaths(std::vector<Pose> &discr_path1, std::vector<Pose> &discr_path2, float robot_size);
 }

@@ -26,12 +26,12 @@ namespace nav
      * but it would surely be possible to make a prediction of the gate the evader is heading to based on its short-term past motion. 
      * This implementation, however, takes the current goal for known at planning time, making it a simpler deterministic scenario.
      * 
-     * @param nm_e          Vector of backward-computed navigation maps to all the gates in the arena.
-     * @param nm_p          Navigation map used by the pursuer and re-computed several times throughout the game.
-     * @param source_e      Starting pose of the evader.
-     * @param source_p      Starting pose of the pursuer.
-     * @param nav_list_e    Out: Navigation path of the evader throughout the game.
-     * @param nav_list_p    Out: Navigation path of the pursuer throughout the game.
+     * @param[in]  nm_e          Vector of backward-computed navigation maps to all the gates in the arena.
+     * @param[in]  nm_p          Navigation map used by the pursuer and re-computed several times throughout the game.
+     * @param[in]  source_e      Starting pose of the evader.
+     * @param[in]  source_p      Starting pose of the pursuer.
+     * @param[out] nav_list_e    Out: Navigation path of the evader throughout the game.
+     * @param[out] nav_list_p    Out: Navigation path of the pursuer throughout the game.
      */
     void runGame(const std::vector<nav::NavMap> &nm_e, nav::NavMap &nm_p,
                  const rm::RoadMap::Node::Orientation &source_e, const rm::RoadMap::Node::Orientation &source_p,

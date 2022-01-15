@@ -57,7 +57,7 @@ namespace dubins
 
     /**
      * @brief Structure representing an arc of the Dubins curve. The concept of arc here extends to straight lines, with 0 curvature.
-     * @see void setDubinsArc(DubinsArc, Pose2D, float, float)
+     * @see setDubinsArc()
      */
     struct DubinsArc
     {
@@ -73,7 +73,7 @@ namespace dubins
 
     /**
      * @brief Structure representing a Dubins curve connecting two poses in the 2D space.
-     * @see void setDubinsCurve(DubinsCurve, Pose2D, float, float, float, float, float, float)
+     * @see setDubinsCurve()
      */
     struct DubinsCurve
     {
@@ -113,7 +113,7 @@ namespace dubins
      * @param sc_th_fin     Out: Scaled final orientation 
      * @param sc_kmax       Out: Scaled maximum curvature
      * @param lambda        Out: Lambda value
-     * @see void scaleFromStandard(float, float, float, float, float, float, float);
+     * @see scaleFromStandard()
      */
     void scaleToStandard(Pose2D start, Pose2D end, float kmax, float &sc_th_init, float &sc_th_fin, float &sc_kmax, float &lambda);
 
@@ -127,7 +127,7 @@ namespace dubins
      * @param s1        Out: Length of first arc
      * @param s2        Out: Length of second arc
      * @param s3        Out: Length of third arc
-     * @see void scaleToStandard(Pose2D, Pose2D, float, float, float, float, float)
+     * @see scaleToStandard()
      */
     void scaleFromStandard(float lambda, float sc_s1, float sc_s2, float sc_s3, float &s1, float &s2, float &s3);
 
@@ -216,8 +216,8 @@ namespace dubins
      * @param start Initial pose
      * @param k     Arc curvature
      * @param s     Arc length
-     * @see struct DubinsArc
-     * @see struct DubinsCurve
+     * @see DubinsArc
+     * @see DubinsCurve
      */
     void setDubinsArc(DubinsArc &ptr, const Pose2D &start, float k, float s);
 
@@ -232,7 +232,7 @@ namespace dubins
      * @param k0    First arc curvature
      * @param k1    Second arc curvature
      * @param k2    Third arc curvature
-     * @see struct DubinsCurve
+     * @see DubinsCurve
      */
     void setDubinsCurve(DubinsCurve &curve, const Pose2D &start, float s1, float s2, float s3, float k0, float k1, float k2);
 
@@ -246,7 +246,7 @@ namespace dubins
      * @param obstacles Optional: vector of obstacles for collision check
      * @param borders   Optional: vector of borders for collision check
      * @return          true if a feasible curve was found, false otherwise
-     * @see struct DubinsCurve
+     * @see DubinsCurve
      */
     bool findShortestPath(DubinsCurve &curve, Pose2D start, Pose2D end, float const &kmax, const std::vector<Polygon> &obstacles = std::vector<Polygon>(), const Polygon &borders = Polygon());
 
@@ -267,7 +267,7 @@ namespace dubins
      * @param step      Discretization step. Distance between two consecutive poses in the discretized path.
      * @param offset    At what length of the arc to begin discretization. It is updated according to the remainder of the arc after discretization.
      * @param path      Out: Vector of poses to which the discretized arc is appended
-     * @see void discretizeCurve(DubinsCurve, float, float, std::vector<Pose>)
+     * @see discretizeCurve()
      */
     void discretizeArc(const DubinsArc &arc, float step, float &offset, std::vector<Pose> &path);
 
@@ -278,7 +278,7 @@ namespace dubins
      * @param step      Discretization step. Distance between two consecutive poses in the discretized path.
      * @param offset    At what length of the curve to begin discretization. It is updated according to the remainder of the curve after discretization.
      * @param path      Out: Vector of poses to which the discretized curve is appended
-     * @see void discretizeArc(DubinsCurve, float, float, std::vector<Pose>)
+     * @see discretizeArc()
      */
     void discretizeCurve(const DubinsCurve &curve, float step, float &offset, std::vector<Pose> &path);
 } // dubins

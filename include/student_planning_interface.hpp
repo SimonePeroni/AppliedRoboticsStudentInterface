@@ -4,9 +4,8 @@
 
 /**
  * @file student_planning_interface.hpp
- * @brief Where the magic happens.
+ * @brief Where the magic happens. See student::planPath() for a detailed description of the process.
  * 
- * @see student#planPath()
  */
 
 namespace student

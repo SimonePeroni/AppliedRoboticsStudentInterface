@@ -24,7 +24,7 @@ namespace nav
     /**
      * @brief Class to create pre-computed navigation maps for a RoadMap.\n
      * 
-     * @see RoadMap
+     * @see rm::RoadMap
      */
     class NavMap
     {

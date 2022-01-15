@@ -9,15 +9,15 @@
 #include <chrono>
 #include <random>
 
-#include "rm/RoadMap.hpp"
+#include "rm/roadmap.hpp"
 #include "rm/visibility.hpp"
 #include "rm/inflate.hpp"
-#include "nav/NavMap.hpp"
-#include "nav/pursuerEvader.hpp"
+#include "nav/navmap.hpp"
+#include "nav/pursuerevader.hpp"
 #include "nav/path.hpp"
 #include "dubins/dubins.hpp"
 #include "utils/timer.hpp"
-#include "utils/MatlabPlot.hpp"
+#include "utils/matlabplot.hpp"
 
 namespace student
 {

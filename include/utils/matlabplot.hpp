@@ -6,7 +6,7 @@
 
 #include "utils.hpp"
 #include "rm/geometry.hpp"
-#include "rm/RoadMap.hpp"
+#include "rm/roadmap.hpp"
 
 /**
  * @file MatlabPlot.hpp

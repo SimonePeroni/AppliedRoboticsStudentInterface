@@ -3,7 +3,7 @@
 #include <vector>
 #include <deque>
 
-#include "rm/RoadMap.hpp"
+#include "rm/roadmap.hpp"
 #include "nav/path.hpp"
 
 /**

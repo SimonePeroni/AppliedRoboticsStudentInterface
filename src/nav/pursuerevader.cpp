@@ -1,4 +1,4 @@
-#include "nav/pursuerEvader.hpp"
+#include "nav/pursuerevader.hpp"
 
 #include <vector>
 #include <random>

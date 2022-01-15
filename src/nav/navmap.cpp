@@ -1,4 +1,4 @@
-#include "nav/NavMap.hpp"
+#include "nav/navmap.hpp"
 
 #include <cmath>
 #include <set>

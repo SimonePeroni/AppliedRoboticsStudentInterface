@@ -1,6 +1,6 @@
 #pragma once
 
-#include "nav/NavMap.hpp"
+#include "nav/navmap.hpp"
 
 #include <vector>
 

@@ -1,4 +1,4 @@
-#include "utils/MatlabPlot.hpp"
+#include "utils/matlabplot.hpp"
 
 namespace utils
 {

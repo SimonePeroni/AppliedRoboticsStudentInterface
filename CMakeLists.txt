@@ -25,18 +25,18 @@ add_library(student SHARED
    src/student_interface.cpp
   # roadmap
    src/rm/inflate.cpp
-   src/rm/RoadMap.cpp
+   src/rm/roadmap.cpp
    src/rm/geometry.cpp
    src/rm/visibility.cpp
   # dubins
    src/dubins/dubins.cpp
   # navigation
-   src/nav/NavMap.cpp
-   src/nav/pursuerEvader.cpp
+   src/nav/navmap.cpp
+   src/nav/pursuerevader.cpp
    src/nav/path.cpp
   #utils
    src/utils/timer.cpp
-   src/utils/MatlabPlot.cpp
+   src/utils/matlabplot.cpp
 )
 
 target_link_libraries(student

@@ -1,14 +1,15 @@
 #pragma once
-/**
- * @file dubins.hpp
- * @brief Library of functions for Dubins curves computation.\n
- * 
- * The maths used in this library is derived from the course material of "Robot Planning and its applications" at the University of Trento
- */
 
 #include <vector>
 #include <iostream>
 #include "utils.hpp"
+
+/**
+ * @file dubins.hpp
+ * @brief Library of functions for Dubins curves computation.\n
+ * 
+ * The maths used in this library is derived from the course material of "Robot Planning and its applications", University of Trento
+ */
 
 /**
  * @brief This namespace holds the functions required for Dubins curves computation.

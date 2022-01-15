@@ -75,14 +75,13 @@ namespace student
 	{
 		const float robot_size = 0.14f;							 // Width of the robot (wheel-wheel)
 		const float collision_offset = robot_size * 0.5f;		 // Offset for obstacle inflation
-		const float visibility_offset = collision_offset * 1.3f; // 0.8; 0.6; -- testing parameters for different maps configurations// Offset for visibility graph vertices
+		const float visibility_offset = collision_offset * 1.3f; // Offset for visibility graph vertices
 		const float visibility_threshold = robot_size * 0.5f;	 // Minimum distance between consecutive nodes
 		const int n_poses = 8;									 // Number of poses per node
 		const float kmax = 1 / robot_size;						 // Maximum curvature of Dubins paths
-		const int k = 5; // 45; 20; 12; -- testing parameters for different maps configurations				 // Robot free roaming parameter
+		const int k = 10; 										 // Robot free roaming parameter
 		const float step = M_PI / 32 / kmax;					 // Discretization step
-
-		const bool enable_matlab_output = true; // Whether to generate matlab file for plotting
+		const bool enable_matlab_output = true; 				 // Whether to generate matlab file for plotting
 		const std::string matlab_file = config_folder + "/student_interface_plot.m";
 
 		std::cout << "**********************************************************************" << std::endl;
@@ -126,7 +125,7 @@ namespace student
 			rm.build(n_poses, kmax, infObstacles, infBorders);
 			t.toc();
 
-			// Add initial position
+			// Add initial positions
 			t.tic("Adding evader start pose...");
 			auto &source_e = rm.addStartPose(Point(x[0], y[0]), theta[0], k, kmax, infObstacles, infBorders);
 			t.toc();
@@ -135,7 +134,7 @@ namespace student
 			auto &source_p = rm.addStartPose(Point(x[1], y[1]), theta[1], k, kmax, infObstacles, infBorders);
 			t.toc();
 
-			// Add gate position
+			// Add gate positions
 			t.tic("Adding goal poses...");
 			std::vector<rm::RoadMap::Node::Orientation *> goal;
 			for (size_t i = 0; i < gate_list.size(); i++)

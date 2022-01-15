@@ -25,14 +25,12 @@ add_library(student SHARED
    src/student_interface.cpp
   # roadmap
    src/rm/inflate.cpp
-   src/rm/maxClearance.cpp
    src/rm/RoadMap.cpp
    src/rm/geometry.cpp
    src/rm/visibility.cpp
   # dubins
    src/dubins/dubins.cpp
   # navigation
-   src/nav/dijkstra.cpp
    src/nav/NavMap.cpp
    src/nav/pursuerEvader.cpp
    src/nav/path.cpp

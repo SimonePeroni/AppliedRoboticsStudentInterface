@@ -10,13 +10,14 @@
  * @file NavMap.hpp
  * @brief This file is dedicated to the NavMap class.
  * 
- * @see NavMap
  * @see nav
+ * @see nav#NavMap
  */
 
 /**
+ * @namespace nav
  * @brief This namespace has a set of classes and functions for navigation.
- * @see NavMap
+ * @see nav#NavMap
  */
 namespace nav
 {

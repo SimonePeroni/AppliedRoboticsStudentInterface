@@ -127,51 +127,6 @@ namespace rm
         return pose;
     }
 
-    size_t RoadMap::bypass(float min_dist, bool remove_short)
-    {
-        size_t count = 0;
-        size_t old_count = -1;
-
-        while (old_count != count)
-        {
-            old_count = count;
-            for (Node &node : _nodes)
-            {
-                std::vector<node_id> to_disconnect;
-                for (size_t i = 0; i < node.getConnectedCount(); i++)
-                {
-                    Node &connected = node.getConnected(i);
-                    float dist = std::hypotf(node.getX() - connected.getX(), node.getY() - connected.getY());
-                    if (dist < min_dist)
-                    {
-                        if (remove_short)
-                            to_disconnect.push_back(connected);
-                        for (size_t j = 0; j < connected.getConnectedCount(); j++)
-                        {
-                            Node &bypass = connected.getConnected(j);
-                            if (connect(node, bypass))
-                                count++;
-                        }
-                    }
-                }
-                if (remove_short)
-                {
-                    for (node_id &to : to_disconnect)
-                    {
-                        node.disconnect(to);
-                    }
-                }
-            }
-        }
-
-        return count;
-    }
-
-    bool RoadMap::disconnect(node_id from, node_id to)
-    {
-        return _nodes[from].disconnect(to);
-    }
-
     unsigned long RoadMap::build(unsigned int orientationsPerNode, float const &kmax, const std::vector<Polygon> &obstacles, const Polygon &borders)
     {
         unsigned long n_connections = 0L;
@@ -246,19 +201,6 @@ namespace rm
 
         _connected.push_back(to);
         return true;
-    }
-
-    bool RoadMap::Node::disconnect(node_id to)
-    {
-        for (auto node = _connected.begin(); node != _connected.end(); node++)
-        {
-            if (*node == to)
-            {
-                _connected.erase(node);
-                return true;
-            }
-        }
-        return false;
     }
 
     RoadMap::Node::operator node_id() const

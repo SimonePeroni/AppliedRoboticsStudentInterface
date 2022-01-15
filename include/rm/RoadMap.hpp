@@ -237,14 +237,6 @@ namespace rm
              */
             bool connectTo(node_id to);
 
-            /**
-             * @brief Disconnect this Node object from another Node object in the base directed graph of the RoadMap
-             * 
-             * @param to ID of the Node object this node is connected to
-             * @return   true if existing connection was found and removed, false otherwise
-             */
-            bool disconnect(node_id to);
-
             operator node_id() const;
         }; // Node
 
@@ -320,15 +312,6 @@ namespace rm
         bool connect(node_id fromID, node_id toID);
 
         /**
-         * @brief Remove an existing connection between two Node objects in the base directed graph of the RoadMap
-         * 
-         * @param fromID    ID of the starting Node object
-         * @param toID      ID of the destination Node object
-         * @return          true if the edge was found and removed, false otherwise
-         */
-        bool disconnect(node_id fromID, node_id toID);
-
-        /**
          * @brief Build the roadmap.
          * 
          * This process starts with the creation of a given number of poses for each positional node, with evenly spaced angles.
@@ -377,14 +360,5 @@ namespace rm
          * @return      Vector of references to the closest nodes
          */
         std::vector<node_id> findKClosest(Point pos, int k, node_id skip = -1);
-
-        /**
-         * @brief Create extra edges to make sure short edges can be skipped
-         * 
-         * @param min_dist      Minimum edge length to skip bypassing
-         * @param remove_short  If true, edges shorter than min_dist are removed from the graph
-         * @return              Number of new edges created in the base directed graph of the roadmap
-         */
-        size_t bypass(float min_dist, bool remove_short);
     }; // RoadMap
 }

@@ -43,6 +43,3 @@ target_link_libraries(student
   ${OpenCV_LIBRARIES}  
   polyclipping
 )
-
-## Compile tests
-add_subdirectory(test)

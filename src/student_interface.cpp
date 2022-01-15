@@ -75,11 +75,11 @@ namespace student
 	{
 		const float robot_size = 0.14f;							 // Width of the robot (wheel-wheel)
 		const float collision_offset = robot_size * 0.5f;		 // Offset for obstacle inflation
-		const float visibility_offset = collision_offset * 1.3f; // Offset for visibility graph vertices
+		const float visibility_offset = collision_offset * 1.3f; // 0.8; 0.6; -- testing parameters for different maps configurations// Offset for visibility graph vertices
 		const float visibility_threshold = robot_size * 0.5f;	 // Minimum distance between consecutive nodes
 		const int n_poses = 8;									 // Number of poses per node
 		const float kmax = 1 / robot_size;						 // Maximum curvature of Dubins paths
-		const int k = 5;										 // Robot free roaming parameter
+		const int k = 5; // 45; 20; 12; -- testing parameters for different maps configurations				 // Robot free roaming parameter
 		const float step = M_PI / 32 / kmax;					 // Discretization step
 
 		const bool enable_matlab_output = true; // Whether to generate matlab file for plotting

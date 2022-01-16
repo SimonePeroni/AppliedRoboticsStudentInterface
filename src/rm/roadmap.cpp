@@ -1,5 +1,7 @@
 #include "rm/roadmap.hpp"
 
+#include "rm/geometry.hpp"
+
 #include <cmath>
 #include <utility>
 #include <set>
@@ -31,7 +33,7 @@ namespace rm
     size_t RoadMap::getNodeCount() const { return _nodes.size(); }
 
     RoadMap::Node &RoadMap::getNode(node_id id) { return _nodes[id]; }
-    
+
     const RoadMap::Node &RoadMap::getNode(node_id id) const { return _nodes[id]; }
 
     std::vector<RoadMap::node_id> RoadMap::findKClosest(Point pos, int k, node_id skip)
@@ -213,7 +215,7 @@ namespace rm
 
     bool RoadMap::Node::Orientation::connect(Orientation &other, float const &kmax, const std::vector<Polygon> &obstacles, const Polygon &borders)
     {
-        dubins::DubinsCurve curve;
+        std::set<dubins::DubinsCurve> curves;
         dubins::Pose2D start, end;
         start.x = _parent->getX();
         start.y = _parent->getY();
@@ -221,10 +223,28 @@ namespace rm
         end.x = other._parent->getX();
         end.y = other._parent->getY();
         end.theta = other._theta;
-        bool success = dubins::findShortestPath(curve, start, end, kmax, obstacles, borders);
-        if (success)
+        dubins::findPaths(curves, start, end, kmax);
+        while (!curves.empty())
         {
-            _connections.push_back(RoadMap::DubinsConnection(this, &other, curve));
+            bool collision = collisionCheck(*curves.begin(), borders);
+            if (!collision)
+            {
+                for (const auto &obst : obstacles)
+                {
+                    if (collisionCheck(*curves.begin(), obst))
+                    {
+                        collision = true;
+                        break;
+                    }
+                }
+            }
+            if (collision)
+            {
+                curves.erase(curves.begin());
+                continue;
+            }
+            
+            _connections.push_back(RoadMap::DubinsConnection(this, &other, *curves.begin()));
             other._from.push_back(_connections.back());
             return true;
         }

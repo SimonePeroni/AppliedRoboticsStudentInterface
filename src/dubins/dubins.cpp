@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <stdexcept>
+#include <set>
 
 #include "dubins/dubins.hpp"
 #include "utils.hpp"
@@ -258,7 +259,7 @@ namespace dubins
 		curve.L = curve.arc_1.s + curve.arc_2.s + curve.arc_3.s;
 	}
 
-	bool findShortestPath(DubinsCurve &curve, Pose2D start, Pose2D end, float const &kmax, const vector<Polygon> &obstacles, const Polygon &borders)
+	void findPaths(std::set<DubinsCurve> &curves, Pose2D start, Pose2D end, float const &kmax)
 	{
 		float sc_th0, sc_thf, sc_kmax;
 		float lambda;
@@ -275,75 +276,32 @@ namespace dubins
 
 		maneuver primitives[6] = {LSL_ptr, RSR_ptr, LSR_ptr, RSL_ptr, RLR_ptr, LRL_ptr};
 		int ksigns[6][3] = {
-			{1, 0, 1},	 //LSL
-			{-1, 0, -1}, //RSR
-			{1, 0, -1},	 //LSR
-			{-1, 0, 1},	 //RSL
-			{-1, 1, -1}, //RLR
-			{1, -1, 1}}; //LRL
+			{ 1,  0,  1},	//LSL
+			{-1,  0, -1},	//RSR
+			{ 1,  0, -1},	//LSR
+			{-1,  0,  1},	//RSL
+			{-1,  1, -1},	//RLR
+			{ 1, -1, 1}};	//LRL
 
-		int pidx = -1;
-		double L = INFINITY;
 		bool ctrl;
 		float s1, s2, s3;
-		float sc_s1, sc_s2, sc_s3;
 		float sc_s1_c, sc_s2_c, sc_s3_c;
-		int Lcur;
-		DubinsCurve best;
 
 		for (size_t i = 0; i < 6; i++)
 		{
 			primitives[i](sc_th0, sc_thf, sc_kmax, ctrl, sc_s1_c, sc_s2_c, sc_s3_c);
 
-			Lcur = sc_s1_c + sc_s2_c + sc_s3_c;
-			if (ctrl && Lcur < L)
+			if (ctrl && check(sc_s1_c, ksigns[i][0] * sc_kmax,
+							  sc_s2_c, ksigns[i][1] * sc_kmax,
+							  sc_s3_c, ksigns[i][2] * sc_kmax,
+							  sc_th0, sc_thf))
 			{
 				DubinsCurve current;
 				scaleFromStandard(lambda, sc_s1_c, sc_s2_c, sc_s3_c, s1, s2, s3);
 				setDubinsCurve(current, start, s1, s2, s3, ksigns[i][0] * kmax, ksigns[i][1] * kmax, ksigns[i][2] * kmax);
-				bool colliding = false;
-				if (!obstacles.empty())
-				{
-					for (auto &obst : obstacles)
-					{
-						if (rm::collisionCheck(current, obst))
-						{
-							colliding = true;
-							break;
-						}
-					}
-				}
-				if (!colliding && !borders.empty())
-				{
-					if (rm::collisionCheck(current, borders))
-						colliding = true;
-				}
-				if (!colliding)
-				{
-					L = Lcur;
-					sc_s1 = sc_s1_c;
-					sc_s2 = sc_s2_c;
-					sc_s3 = sc_s3_c;
-					best = current;
-					pidx = i;
-				}
+				curves.insert(current);
 			}
 		}
-
-		if (pidx >= 0)
-		{
-			curve = best;
-
-			// Check correctess of solution
-			if (!check(sc_s1, ksigns[pidx][0] * sc_kmax,
-					   sc_s2, ksigns[pidx][1] * sc_kmax,
-					   sc_s3, ksigns[pidx][2] * sc_kmax,
-					   sc_th0, sc_thf))
-				return false; //throw std::logic_error("DUBINS - INCORRECT COMPUTED SOLUTION");
-
-			return true;
-		}
-		return false;
 	}
 
 	Pose2D poseOnArc(float s, Pose2D p0, float k)

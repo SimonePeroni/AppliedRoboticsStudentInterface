@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <iostream>
+#include <set>
 #include "utils.hpp"
 
 /**
@@ -85,6 +86,9 @@ namespace dubins
         DubinsArc arc_2;
         /** Third arc of the curve */
         DubinsArc arc_3;
+
+        inline bool operator<(const DubinsCurve &other) const { return L < other.L; }
+        inline bool operator>(const DubinsCurve &other) const { return other < *this; }
     };
 
     /**
@@ -235,20 +239,20 @@ namespace dubins
      * @see DubinsCurve
      */
     void setDubinsCurve(DubinsCurve &curve, const Pose2D &start, float s1, float s2, float s3, float k0, float k1, float k2);
-
+    
     /**
-     * @brief Find the shortest Dubins curve connecting two poses in a 2D space.
+     * @brief Find a set of Dubins curve connecting two poses in a 2D space.
      * 
-     * @param[out] curve     Out: Computed Dubins curve 
+     * Computes all six LRL, LSL, LSR, RLR, RSR, RSL primitives and returns a set of the feasible one, ordered by length.
+     * 
+     * @param[out] curves    Out: Computed Dubins curves 
      * @param[in]  start     Start pose
      * @param[in]  end       End pose
      * @param[in]  kmax      Maximum curvature
-     * @param[in]  obstacles Optional: vector of obstacles for collision check
-     * @param[in]  borders   Optional: vector of borders for collision check
-     * @return          true if a feasible curve was found, false otherwise
+     * 
      * @see DubinsCurve
      */
-    bool findShortestPath(DubinsCurve &curve, Pose2D start, Pose2D end, float const &kmax, const std::vector<Polygon> &obstacles = std::vector<Polygon>(), const Polygon &borders = Polygon());
+    void findPaths(std::set<DubinsCurve> &curves, Pose2D start, Pose2D end, float const &kmax);
 
     /**
      * @brief Compute the pose of a circular-arc trajectory at a given parameterized length.

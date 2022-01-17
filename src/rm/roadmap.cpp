@@ -226,7 +226,7 @@ namespace rm
         dubins::findPaths(curves, start, end, kmax);
         while (!curves.empty())
         {
-            bool collision = collisionCheck(*curves.begin(), borders);
+            bool collision = borders.empty() ? false : collisionCheck(*curves.begin(), borders);
             if (!collision)
             {
                 for (const auto &obst : obstacles)

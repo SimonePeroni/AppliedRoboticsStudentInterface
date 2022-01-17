@@ -121,17 +121,19 @@ namespace student
 			t.toc();
 
 			// Build RoadMap
-			t.tic("Building roadmap...");
+			t.tic("Building roadmap (may require a few seconds)...");
 			rm.build(n_poses, kmax, infObstacles, infBorders);
 			t.toc();
 
 			// Add initial positions
-			t.tic("Adding evader start pose...");
+			t.tic("Adding start poses...");
+			t.tic();
 			auto &source_e = rm.addStartPose(Point(x[0], y[0]), theta[0], k, kmax, infObstacles, infBorders);
-			t.toc();
+			t.toc("Evader");
 
-			t.tic("Adding pursuer start pose...");
+			t.tic();
 			auto &source_p = rm.addStartPose(Point(x[1], y[1]), theta[1], k, kmax, infObstacles, infBorders);
+			t.toc("Pursuer");
 			t.toc();
 
 			// Add gate positions
